@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package from_buoy.wave.v1;
+
+// This a wave profile (measured by GNSS)
+message Profile {
+  // Recorded at UTC Seconds since 2025-01-01T00:00:00Z
+  optional uint32 seconds_2025 = 1;
+  // Significant wave height max 100 parts
+  optional uint32 significant_wave_height_max_100_parts = 2;
+  // Mean wave height max 100 parts
+  optional uint32 mean_wave_height_100_parts = 3;
+  // Mean wave height (BF) max 100 parts
+  optional uint32 mean_wave_height_bf_100_parts = 4;
+  // Mean wave height (HF) max 100 parts
+  optional uint32 mean_wave_height_hf_100_parts = 5;
+  // Peak wave period 100 parts
+  optional uint32 peak_wave_period_100_parts = 6;
+  // Mean wave period 100 parts
+  optional uint32 mean_wave_period_100_parts = 7;
+  // Peak wave period (BF) 10 parts
+  optional uint32 peak_wave_period_bf_10_parts = 8;
+  // Peak wave period (HF) 10 parts
+  optional uint32 peak_wave_period_hf_10_parts = 9;
+  // Zero crossing period 100 parts
+  optional uint32 zero_crossing_period_100_parts = 10;
+  // Number of waves detected
+  optional uint32 number_of_waves = 11;
+  // Directional spread 10 parts
+  optional sint32 directional_spread_10_parts = 12;
+  // Maximum period 100 parts
+  optional uint32 maximum_period_100_parts = 13;
+  // Time at Hmax 10 parts
+  optional uint32 time_at_hmax_10_parts = 14;
+  // Height of highest third 100 parts
+  optional uint32 height_of_highest_third_100_parts = 15;
+  // Mean period of highest third 100 parts
+  optional uint32 mean_period_of_highest_third_100_parts = 16;
+  // Mean direction Tp 10 parts
+  optional sint32 tp_mean_direction_10_parts = 17;
+  // Mean direction BF Tp 10 parts
+  optional sint32 tp_direction_bf_10_parts = 18;
+  // Mean direction HF Tp 10 parts
+  optional sint32 tp_direction_hf_10_parts = 19;
+  // Mean T01 period 10 parts
+  optional uint32 t01_mean_period_10_parts = 20;
+  // Mean period T02 BF 10 parts
+  optional uint32 t02_mean_period_bf_10_parts = 21;
+  // Mean period T02 HF 10 parts
+  optional uint32 t02_mean_period_hf_10_parts = 22;
+  // Direction T02 BF 10 parts
+  optional sint32 t02_direction_bf_10_parts = 23;
+  // Direction T02 HF 10 parts
+  optional sint32 t02_direction_hf_10_parts = 24;
+  // Mean direction T02 10 parts
+  optional sint32 t02_mean_direction_10_parts = 25;
+  // Raw GNSS data, used when high bandwidth is required link / Cellular
+  optional bytes raw_gnss = 26;
+}

@@ -1,0 +1,31 @@
+{
+    "name": "client",
+    "version": "0.0.1",
+    "description": "A Service for managing buoy data",
+    "productName": "Nortek Buoy",
+    "author": "Morten Berg morten.berg@codewielder.com",
+    "type": "module",
+    "private": true,
+    "license": "UNLICENSED",
+    "scripts": {
+        "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
+        "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
+        "test": "echo \"No test specified\" && exit 0",
+        "sandbox": "tsx scripts/runSandbox.ts",
+        "cleanup": "source ../initShell.sh && npx ampx sandbox --profile codewielder delete",
+        "dev": "quasar dev",
+        "build": "quasar build",
+        "postinstall": "quasar prepare"
+    },
+    "dependencies": {
+      
+    },
+    "devDependencies": {
+      
+    },
+    "engines": {
+        "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",
+        "npm": ">= 6.13.4",
+        "yarn": ">= 1.21.1"
+    }
+}

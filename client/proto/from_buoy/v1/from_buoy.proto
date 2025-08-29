@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package from_buoy.v1;
+
+import "from_buoy/ad2cp/v1/ad2cp.proto";
+import "from_buoy/ahrs/v1/ahrs.proto";
+import "from_buoy/gnss/v1/gnss.proto";
+import "from_buoy/log/v1/log.proto";
+import "from_buoy/manifest/v1/manifest.proto";
+import "from_buoy/self_test/v1/self_test.proto";
+import "from_buoy/system/v1/system.proto";
+import "from_buoy/wave/v1/wave.proto";
+
+// Used if cloud should merge messages
+message MultiMessage {
+  // Message ID, increasing counter, used to identify the message
+  uint32 message_id = 1;
+  // Total number of messages in this message
+  uint32 total_messages = 2;
+  // Sequence number of this message
+  uint32 sequence_number = 3;
+}
+// Records from onboard sensors
+message SensorRecord {
+  // AD2CP profiles
+  repeated ad2cp.v1.Profile profiles = 1;
+  // Ahrs recordings
+  repeated ahrs.v1.Recording ahrs = 2;
+  // Wave profiles
+  repeated wave.v1.Profile waves = 3;
+  // GNSS locations
+  repeated gnss.v1.Location locations = 4;
+}
+
+// Main message for data from the buoy
+message FromBuoy {
+  // For use in future updates
+  optional uint32 version = 1;
+  // Message sent UTC Seconds since 2025-01-01T00:00:00Z
+  optional uint32 seconds_2025 = 2;
+  // Multi-message information, used for e.g. SBD
+  optional MultiMessage multi_message = 3;
+  // System performance
+  repeated system.v1.Performance system = 4;
+  // Log messages
+  repeated log.v1.Entry logs = 5;
+  // Self test report
+  optional self_test.v1.SelfTest self_test = 6;
+  // Manifest / System information
+  optional manifest.v1.Manifest manifest = 7;
+    // Sensor record
+  optional SensorRecord sensor_record = 8;
+}

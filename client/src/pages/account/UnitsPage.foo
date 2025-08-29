@@ -1,0 +1,373 @@
+<template>
+  <q-page
+    :style-fn="fullHeight"
+    class="column items-center justify-center animated-background"
+  >
+    <q-card class="page-card units-card column">
+      <q-card-section class="col-auto row justify-center items-center">
+        <q-icon name="precision_manufacturing" size="48px" /> Units
+      </q-card-section>
+      <q-separator />
+      <q-card-section class="col row scroll">
+        <div class="col-sm-6 col-12 column">
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Speed</div>
+            <q-btn-toggle
+              v-model="speedUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="speedOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Depth</div>
+            <q-btn-toggle
+              v-model="depthUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="depthOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Current</div>
+            <q-btn-toggle
+              v-model="currentUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="currentOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Angle / Direction</div>
+            <q-btn-toggle
+              v-model="angleUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="angleOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Location</div>
+            <q-btn-toggle
+              v-model="locationUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="locationOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+          <!--
+        <div class="col-auto unit-box">
+          <div class="txt-overline unit-title">Rotation</div>
+          <q-btn-toggle
+            v-model="rotationUnit"
+            unelevated
+            rounded
+            no-caps
+            color="disabled"
+            text-color="normal"
+            toggle-color="active"
+            toggle-text-color="active"
+            :options="rotationOptions"
+            class="bordered unit-toggle"
+          />
+        </div>
+         -->
+        </div>
+        <div class="col-sm-6 col-12 column items-start">
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Distance</div>
+            <q-btn-toggle
+              v-model="distanceUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="distanceOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Pressure</div>
+            <q-btn-toggle
+              v-model="pressureUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="pressureOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Temperature</div>
+            <q-btn-toggle
+              v-model="temperatureUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="temperatureOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+          <div class="col-auto unit-box">
+            <div class="txt-overline unit-title">Precipitation</div>
+            <q-btn-toggle
+              v-model="precipitationUnit"
+              unelevated
+              rounded
+              no-caps
+              color="disabled"
+              text-color="normal"
+              toggle-color="active"
+              toggle-text-color="active"
+              :options="precipitationOptions"
+              class="bordered unit-toggle"
+            />
+          </div>
+
+          <!--
+        <div class="col-auto unit-box">
+          <div class="txt-overline unit-title">Acceleration</div>
+          <q-btn-toggle
+            v-model="accelUnit"
+            unelevated
+            rounded
+            no-caps
+            color="disabled"
+            text-color="normal"
+            toggle-color="active"
+            toggle-text-color="active"
+            :options="accelOptions"
+            class="bordered unit-toggle"
+          />
+        </div>
+        --></div>
+      </q-card-section>
+    </q-card>
+  </q-page>
+</template>
+
+<script lang="ts">
+import type {
+  AccelUnits,
+  AngleUnits,
+  CurrentUnits,
+  DepthUnits,
+  DistanceUnits,
+  PrecipitationUnits,
+  PressureUnits,
+  RotationUnits,
+  SpeedUnits,
+  TemperatureUnits,
+  LocationUnits,
+} from '@/useStore/units/models';
+import { defineComponent } from 'vue';
+import { fullHeight } from '@hefring/commons/div';
+import { useUnits } from 'client/useStore';
+
+interface SpeedOptions {
+  value: SpeedUnits;
+  label: string;
+}
+interface CurrentOptions {
+  value: CurrentUnits;
+  label: string;
+}
+interface AngleOptions {
+  value: AngleUnits;
+  label: string;
+}
+interface LocationOptions {
+  value: LocationUnits;
+  label: string;
+}
+interface DistanceOptions {
+  value: DistanceUnits;
+  label: string;
+}
+interface TemperatureOptions {
+  value: TemperatureUnits;
+  label: string;
+}
+interface DepthOptions {
+  value: DepthUnits;
+  label: string;
+}
+interface AccelOptions {
+  value: AccelUnits;
+  label: string;
+}
+interface RotationOptions {
+  value: RotationUnits;
+  label: string;
+}
+interface PressureOptions {
+  value: PressureUnits;
+  label: string;
+}
+interface PrecipitationOptions {
+  value: PrecipitationUnits;
+  label: string;
+}
+export default defineComponent({
+  name: 'PageUnits',
+  components: {},
+  setup() {
+    const {
+      speedUnit,
+      currentUnit,
+      angleUnit,
+      distanceUnit,
+      temperatureUnit,
+      depthUnit,
+      accelUnit,
+      rotationUnit,
+      locationUnit,
+      pressureUnit,
+      precipitationUnit,
+    } = useUnits.getState();
+
+    const speedOptions: SpeedOptions[] = [
+      { value: 'kn', label: 'kn' },
+      { value: 'NM/h', label: 'NM/h' },
+      { value: 'km/h', label: 'km/h' },
+      { value: 'm/s', label: 'm/s' },
+      { value: 'ft/s', label: 'ft/s' },
+    ];
+    const currentOptions: CurrentOptions[] = [
+      { value: 'kn', label: 'kn' },
+      { value: 'NM/h', label: 'NM/h' },
+      { value: 'km/h', label: 'km/h' },
+      { value: 'm/s', label: 'm/s' },
+      { value: 'ft/s', label: 'ft/s' },
+    ];
+    const angleOptions: AngleOptions[] = [
+      { value: 'abs', label: 'Abs' },
+      { value: 'rad', label: 'Radians' },
+      { value: 'deg', label: 'Degrees' },
+    ];
+    const locationOptions: LocationOptions[] = [
+      { value: 'dd', label: 'Decimal' },
+      { value: 'dms', label: 'Minutes/Seconds' },
+    ];
+    const distanceOptions: DistanceOptions[] = [
+      { value: 'NM', label: 'NM' },
+      { value: 'km', label: 'Kilometers' },
+      { value: 'miles', label: 'Miles' },
+      { value: 'm', label: 'Meter' },
+      { value: 'ft', label: 'Feet' },
+    ];
+    const temperatureOptions: TemperatureOptions[] = [
+      { value: '°C', label: 'Celsius' },
+      { value: '°F', label: 'Fahrenheit' },
+      //   { value: 'Kelvin', label: 'Kelvin' },
+    ];
+    const depthOptions: DepthOptions[] = [
+      { value: 'm', label: 'Meters' },
+      { value: 'Ft', label: 'Feet' },
+      { value: 'Fath', label: 'Fathoms' },
+    ];
+    const accelOptions: AccelOptions[] = [
+      { value: 'm/s²', label: 'm/s²' },
+      { value: 'G', label: 'G' },
+      { value: 'ft/s²', label: 'ft/s²' },
+    ];
+    const rotationOptions: RotationOptions[] = [
+      { value: 'deg/s', label: 'deg/s' },
+      { value: 'rad/s', label: 'rad/s' },
+    ];
+    const pressureOptions: PressureOptions[] = [
+      { value: 'Pa', label: 'Pascal' },
+      { value: 'mbar', label: 'Millibar' },
+      { value: 'dbar', label: 'Decibar' },
+      { value: 'bar', label: 'Bar' },
+      { value: 'psi', label: 'psi' },
+    ];
+    const precipitationOptions: PrecipitationOptions[] = [
+      { value: 'mm', label: 'Millimeter' },
+      { value: 'inch', label: 'Inch' },
+      { value: 'points', label: 'Points' },
+    ];
+    return {
+      speedUnit,
+      currentUnit,
+      locationUnit,
+      angleUnit,
+      distanceUnit,
+      temperatureUnit,
+      depthUnit,
+      accelUnit,
+      rotationUnit,
+      pressureUnit,
+      fullHeight,
+      speedOptions,
+      currentOptions,
+      angleOptions,
+      distanceOptions,
+      temperatureOptions,
+      depthOptions,
+      accelOptions,
+      rotationOptions,
+      pressureOptions,
+      precipitationOptions,
+      precipitationUnit,
+      locationOptions,
+    };
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+.units-card {
+  .unit-box {
+    margin: 16px;
+  }
+  .unit-title {
+    margin-bottom: 8px;
+  }
+  .unit-toggle {
+    margin-left: 8px;
+  }
+}
+</style>

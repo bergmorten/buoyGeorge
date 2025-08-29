@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package from_buoy.manifest.v1;
+
+
+// The main board is installed
+enum CPU {
+  // Unknown CPU type
+  CPU_UNSPECIFIED = 0;
+}
+
+// Which communications board is installed?
+enum Comms {
+  // UNKNOWN COMMUNICATIONS TYPE
+  COMMS_UNSPECIFIED = 0;
+  // ROCKBLOCK 9704 COMMUNICATIONS TYPE
+  COMMS_ROCKBLOCK_9704 = 1;
+  // ROCKBLOCK 9703 COMMUNICATIONS TYPE
+  COMMS_ROCKBLOCK_9703 = 2;
+  // QUALCOMM 315 COMMUNICATIONS TYPE
+  COMMS_QUALCOMM_315 = 3;
+  // NRF9160 COMMUNICATIONS TYPE
+  COMMS_NRF9160 = 4;
+}
+
+// The GNSS board is installed
+enum GNSS {
+  // UNKNOWN GNSS TYPE
+  GNSS_UNSPECIFIED = 0;
+  // UBLOX NEO-F9P GNSS TYPE
+  GNSS_UBLOX_NEO_F9P = 1;
+  // UBLOX ZED-F9P GNSS TYPE
+  GNSS_UBLOX_ZED_F9P = 2;
+  // UBLOX ZED-X209P GNSS TYPE
+  GNSS_UBLOX_ZED_X209P = 3;
+}
+
+// Identity and manifest of the system. Transferred on boot or command
+message Manifest {
+  // Serial number of the system
+  optional string serial_number = 1;
+    // Firmware version string
+  optional string firmware_version = 2;
+  // CPU model / Board
+  optional CPU cpu = 3;
+  // GNSS model / Board
+  optional GNSS gnss = 4;
+  // Communications model / Board
+  repeated Comms comms = 5;
+  // The manifest (JSON encoded)
+  optional string manifest = 6;
+}

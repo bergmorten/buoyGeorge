@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package from_buoy.ahrs.v1;
+
+// AHRS data from sensor XXX
+message Recording {
+  // Recorded at UTC Seconds since 2025-01-01T00:00:00Z
+  optional uint32 seconds2025 = 1;
+  // Gyroscope in tenths of degrees per second x axis
+  optional sint32 gyro_x_10parts = 2;
+  // Gyroscope in tenths of degrees per second y axis
+  optional sint32 gyro_y_10parts = 3;
+  // Gyroscope in tenths of degrees per second z axis
+  optional sint32 gyro_z_10parts = 4;
+  // Accelerometer in hundredths of g x axis
+  optional sint32 accel_x_100parts = 5;
+  // Accelerometer in hundredths of g y axis
+  optional sint32 accel_y_100parts = 6;
+  // Accelerometer in hundredths of g z axis
+  optional sint32 accel_z_100parts = 7;
+  // Magnetometer in tenths of microtesla x axis
+  optional sint32 mag_x_10parts = 8;
+  // Magnetometer in tenths of microtesla y axis
+  optional sint32 mag_y_10parts = 9;
+  // Magnetometer in tenths of microtesla z axis
+  optional sint32 mag_z_10parts = 10;
+  // Temperature in tenths of degrees Celsius
+  optional uint32 temperature_10parts = 11;
+  // Pressure in hundredths of mBar
+  optional uint32 pressure_100parts = 12;
+  // Heading in hundredths of degrees
+  optional sint32 heading_100parts = 13;
+  // Pitch in tenths of degrees
+  optional sint32 pitch_100parts = 14;
+  // Roll in tenths of degrees
+  optional sint32 roll_100parts = 15;
+  // Yaw in tenths of degrees
+  optional sint32 yaw_100parts = 16;
+}

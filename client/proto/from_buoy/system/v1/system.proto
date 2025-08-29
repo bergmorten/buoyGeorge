@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package from_buoy.system.v1;
+
+
+// The system state
+enum Status {
+  // Unknown or not set
+   STATUS_UNSPECIFIED = 0;
+   // Working normally
+   STATUS_RUNNING = 1;
+   // System is paused by operator
+   STATUS_HALTED = 2;
+   // System has been aborted
+   STATUS_ABORT = 3;
+}
+
+
+// Dynamic information about status and performance
+message Performance {
+  // Recorded at UTC Seconds since 2025-01-01T00:00:00Z
+  optional uint32 seconds_2025 = 1;
+  // Voltage in 1/100 volts
+  optional uint32 voltage_100parts = 2;
+  // Current in 1/100 amps
+  optional uint32 current_100parts = 3;
+  // Temperature in degrees Celsius
+  optional uint32 temperature_celsius = 4;
+  // Uptime in seconds since boot
+  optional uint32 uptime_seconds = 5;
+  // RAM usage in 1/100 percent
+  optional uint32 ram_percentage_100parts = 6;
+  // CPU usage in 1/100 percent
+  optional uint32 cpu_usage_percentage_100parts = 7;
+  // System status
+  Status status = 8;
+}

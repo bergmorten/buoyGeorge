@@ -1,0 +1,122 @@
+body {
+    color: #0009 !important;
+    font-size: 16px;
+}
+
+.help-drawer {
+    background: var(--container-background-color);
+    resize: horizontal;
+    border-top: 2px solid var(--element-active-color);
+    border-left: 2px solid var(--border-outline-color);
+    //border-bottom: 2px solid var(--border-outline-color);
+    margin-top: -2px;
+    padding: 16px;
+}
+.animated-background {
+    align-items: center;
+    display: flex;
+    height: 100vh;
+    background-image: url('assets/svg/waves.svg');
+    // background-image: url(/svg/backgrounds/waves.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    @media only screen and (max-width: 600px), screen and (max-height: 600px) {
+        background-image: none;
+    }
+}
+.dialog-help-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+}
+.text-ellipsis-auto {
+    //width: auto;
+    max-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.text-ellipsis-100 {
+    width: 100px;
+    max-width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.text-ellipsis-150 {
+    width: 150px;
+    max-width: 150px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.text-ellipsis-200 {
+    width: 200px;
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.text-ellipsis-300 {
+    width: 300px;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.text-ellipsis-400 {
+    width: 400px;
+    max-width: 400px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.absolute-center {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+}
+.text-instrument {
+    color: var(--instrument-dynamic-color);
+}
+.text-running {
+    color: var(--alert-running-color);
+}
+.page-card {
+    max-height: 80%;
+    @media only screen and (max-width: 600px), screen and (max-height: 600px) {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: none !important;
+        max-width: none !important;
+    }
+}
+
+.landscape {
+    @media screen and (min-width: 320px) and (max-width: 600px) and (orientation: portrait) {
+        transform: rotate(-90deg);
+        transform-origin: center;
+        width: 100vh;
+        height: 100vw;
+        overflow-x: hidden;
+        position: absolute;
+        top: 100%;
+        left: 0;
+    }
+}
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #ccc;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}

@@ -1,0 +1,31 @@
+.scroll-table {
+    //max-height: calc(100vh - 200px);
+    max-height: 100%;
+    .q-table__top,
+    .q-table__middle,
+    .q-table__bottom,
+    thead tr:first-child th {
+        /* bg color is important for th; just specify one */
+        //background-color: var(--container-background-color);
+    }
+
+    thead tr th {
+        position: sticky;
+        z-index: 1;
+    }
+    thead tr:first-child th {
+        top: 0;
+    }
+
+    /* this is when the loading indicator appears */
+    &.q-table--loading thead tr:last-child th {
+        /* height of all previous header rows */
+        top: 48px;
+    }
+}
+
+.table-buttons {
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+}

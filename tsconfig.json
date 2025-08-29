@@ -1,0 +1,54 @@
+{
+    "extends": "./client/.quasar/tsconfig.json",
+    "compilerOptions": {
+        "paths": {
+            "#q-app": ["./node_modules/@quasar/app-vite/types/index.d.ts"],
+            "#q-app/wrappers": [
+                "./node_modules/@quasar/app-vite/types/app-wrappers.d.ts"
+            ],
+            "#q-app/bex/background": [
+                "./node_modules/@quasar/app-vite/types/bex/entrypoints/background.d.ts"
+            ],
+            "#q-app/bex/content": [
+                "./node_modules/@quasar/app-vite/types/bex/entrypoints/content.d.ts"
+            ],
+            "#q-app/bex/private/bex-bridge": [
+                "./node_modules/@quasar/app-vite/types/bex/bex-bridge.d.ts"
+            ],
+            "client": ["./client/src"],
+            "client/*": ["./client/src/*"],
+            "clientRoot": ["./client"],
+            "clientRoot/*": ["./client/*"],
+            "admin": ["./admin/src"],
+            "admin/*": ["./admin/src/*"],
+            "adminRoot": ["./admin"],
+            "adminRoot/*": ["./admin/*"],
+            "cmn": ["./common/src"],
+            "cmn/*": ["./common/src/*"],
+            "cmnRoot": ["./common"],
+            "cmnRoot/*": ["./common/*"]
+        }
+    },
+    "include": [
+        "./.quasar/**/*.d.ts",
+        "./**/*.ts",
+        "./**/*.vue",
+        "./**/*.js",
+        "./**/*.json"
+    ],
+    "exclude": [
+        "./node_modules",
+        "./admin/dist",
+        "./admin/node_modules",
+        "./admin/src-capacitor",
+        "./admin/src-cordova",
+        "./admin/quasar.config.*.temporary.compiled*",
+        "./admin/amplify",
+        "./client/dist",
+        "./client/node_modules",
+        "./client/src-capacitor",
+        "./client/src-cordova",
+        "./client/quasar.config.*.temporary.compiled*",
+        "./client/amplify"
+    ]
+}

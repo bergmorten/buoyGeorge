@@ -1,0 +1,14 @@
+version: v2
+clean: true
+managed:
+  enabled: true
+plugins:
+  - remote: buf.build/community/stephenh-ts-proto:v2.6.1
+    out: ../src/proto/stephenh
+  - remote: buf.build/protocolbuffers/pyi:v31.1
+    out: ../src/proto/python
+  - remote: buf.build/community/nanopb:v0.4.9
+    out: ../src/proto/nanopb
+
+inputs:
+  - directory: .

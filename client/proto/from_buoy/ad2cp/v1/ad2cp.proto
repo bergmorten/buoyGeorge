@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package from_buoy.ad2cp.v1;
+
+// Values are stored in Delta Zig-Zag coding relative to previous cell
+message Cell {
+  // Direction of current in tenths of degrees
+  optional sint32 direction_10parts = 1;
+  // Speed of current in hundredths of meters per second
+  optional sint32 velocity_100parts = 2;
+  // Amplitude / Strength of signal in tenths of dB
+  optional sint32 amplitude_10parts = 3;
+}
+
+// AD2CP with sensor values and current cell profile
+message Profile {
+  // Recorded at UTC Seconds since 2025-01-01T00:00:00Z
+  optional uint32 seconds_2025 = 1;
+  // Temperature in hundredths of degrees
+  optional uint32 temperature_100parts = 2;
+  // Pressure in hundredths of dBar
+  optional uint32 pressure_100parts = 3;
+  // Pitch in tenths of degrees
+  optional sint32 pitch_10parts = 4;
+  // Roll in tenths of degrees
+  optional sint32 roll_10parts = 5;
+  // Velocity scale in hundredths
+  optional sint32 velocity_scale = 6;
+  // Cells in the profile
+  repeated Cell cells = 7;
+  // Raw AD2CP data, used when high bandwidth is required link / Cellular
+  optional bytes raw_ad2cp = 8;
+}

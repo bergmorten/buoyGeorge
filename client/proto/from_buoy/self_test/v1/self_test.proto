@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package from_buoy.self_test.v1;
+
+// Identity and manifest of the system. Transferred on boot or command
+message SelfTest {
+  // Overall success of the test
+  optional bool success = 1;
+  // The test rapport (JSON encoded)
+  optional string rapport = 2;
+}

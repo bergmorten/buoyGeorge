@@ -1,0 +1,31 @@
+{
+    "name": "admin",
+    "version": "0.0.1",
+    "description": "An application for administration of Nortek Cloud Services",
+    "productName": "Nortek Cloud Services Admin",
+    "author": "Morten Berg morten.berg@codewielder.com",
+    "type": "module",
+    "private": true,
+    "license": "UNLICENSED",
+    "scripts": {
+        "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
+        "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
+        "sandbox": "source ../initShell.sh && npx ampx sandbox --stream-function-logs --profile codewielder",
+        "cleanup": "source ../initShell.sh && npx ampx sandbox --profile codewielder delete",
+        "test": "echo \"No test specified\" && exit 0",
+        "dev": "quasar dev",
+        "build": "quasar build",
+        "postinstall": "quasar prepare"
+    },
+    "dependencies": {
+      
+    },
+    "devDependencies": {
+      
+    },
+    "engines": {
+        "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",
+        "npm": ">= 6.13.4",
+        "yarn": ">= 1.21.1"
+    }
+}

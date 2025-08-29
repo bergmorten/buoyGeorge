@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package from_buoy.gnss.v1;
+
+// Latitude and longitude with some quality indicators
+message Location {
+  // Recorded at UTC Seconds since 2025-01-01T00:00:00Z
+  optional uint32 seconds2025 = 1;
+  // Latitude in degrees
+  optional double latitude = 2;
+  // Longitude in degrees
+  optional double longitude = 3;
+  // GNSS quality indicator
+  optional uint32 quality = 4;
+  // Number of satellites used
+  optional uint32 number_of_satellites = 5;
+}

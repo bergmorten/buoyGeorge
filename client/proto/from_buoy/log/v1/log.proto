@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package from_buoy.log.v1;
+
+
+// The level or importance of the log message
+enum Level {
+  // Not specified log level
+   LEVEL_UNSPECIFIED = 0;
+   // Debug log level
+   LEVEL_DEBUG = 1;
+   // Informational log level
+   LEVEL_INFO = 2;
+   // Warning log level
+   LEVEL_WARNING = 3;
+   // Error log level
+   LEVEL_ERROR = 4;
+   // Critical log level, a non-recoverable error
+   LEVEL_CRITICAL = 5;
+}
+
+
+// In which part did error occur?
+enum Subsystem {
+   // Unknown or not set
+   SUBSYSTEM_UNSPECIFIED = 0;
+   // Main CPU
+   SUBSYSTEM_CPU = 1;
+   // Communications
+   SUBSYSTEM_COMMS = 2;
+   // AD2CP
+   SUBSYSTEM_AD2CP = 3;
+   // GNSS
+   SUBSYSTEM_GNSS = 4;
+}
+
+// Detailed log information where in code
+message Detailed {
+  // Detailed log message
+  optional string filename = 1;
+  // Function name
+  optional string function = 2;
+  // Line number
+  optional uint32 line = 3;
+  // Column number
+  optional uint32 column = 4;
+}
+
+// This is the log message
+message Entry {
+  // Recorded at UTC Seconds since 2025-01-01T00:00:00Z
+  optional uint32 seconds_2025 = 1;
+  // Log level
+  optional Level level = 2;
+  // Subsystem that generated the log
+  optional Subsystem subsystem = 3;
+  // Log message
+  optional string message = 4;
+  // Detailed log information
+  optional Detailed detailed = 5;
+}
