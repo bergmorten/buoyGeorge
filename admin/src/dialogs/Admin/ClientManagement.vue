@@ -321,14 +321,15 @@ const state = reactive<State>({
 });
 const isEditing = props.client !== undefined;
 
-const resetClient = async () => {
+const resetClient = () => {
     if (props.client) {
-        const fullClient = await db.client.getFull(props.client.id);
-        state.name = fullClient.name;
-        state.url = fullClient.url;
-        state.amplifyWebhook = fullClient.amplifyWebhook;
-        state.iridiumBanned = fullClient.iridiumBanned;
-        state.tcpBanned = fullClient.tcpBanned;
+        const fullClient = db.clients.get(props.client.id);
+
+        state.name = fullClient?.name ?? '';
+        state.url = fullClient?.url ?? null;
+        state.amplifyWebhook = fullClient?.amplifyWebhook ?? null;
+        state.iridiumBanned = fullClient?.iridiumBanned ?? null;
+        state.tcpBanned = fullClient?.tcpBanned ?? null;
     }
 };
 

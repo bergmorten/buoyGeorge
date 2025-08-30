@@ -43,12 +43,11 @@
         "./admin/src-capacitor",
         "./admin/src-cordova",
         "./admin/quasar.config.*.temporary.compiled*",
-        "./admin/amplify",
+
         "./client/dist",
         "./client/node_modules",
         "./client/src-capacitor",
         "./client/src-cordova",
-        "./client/quasar.config.*.temporary.compiled*",
-        "./client/amplify"
+        "./client/quasar.config.*.temporary.compiled*"
     ]
 }

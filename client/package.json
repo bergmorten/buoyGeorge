@@ -12,17 +12,13 @@
         "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
         "test": "echo \"No test specified\" && exit 0",
         "sandbox": "tsx scripts/runSandbox.ts",
-        "cleanup": "source ../initShell.sh && npx ampx sandbox --profile codewielder delete",
+        "cleanup": "tsx scripts/runCleanup.ts",
         "dev": "quasar dev",
         "build": "quasar build",
         "postinstall": "quasar prepare"
     },
-    "dependencies": {
-      
-    },
-    "devDependencies": {
-      
-    },
+    "dependencies": {},
+    "devDependencies": {},
     "engines": {
         "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",
         "npm": ">= 6.13.4",

@@ -56,7 +56,6 @@ const useDatabase = () => {
         }
     };
     const start = async () => {
-        debugger;
         clear();
         client.startSubscriptions(clients);
         modem.startSubscriptions(modems);
@@ -66,7 +65,6 @@ const useDatabase = () => {
     };
 
     const stop = () => {
-        debugger;
         client.stopSubscriptions();
         modem.stopSubscriptions();
 

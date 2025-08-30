@@ -9,7 +9,7 @@ import { type Schema } from '../../data/resource';
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime';
-import { env } from '$amplify/env/pre-token-generation';
+import { env } from 'clientRoot/.amplify/generated/env/pre-token-generation'; ///env/pre-token-generation';
 
 // Do not know how to enable X-ray tracing and auth functions
 //const serviceName = 'preTokenTrigger';

@@ -26,7 +26,6 @@ export const Client = a
         socketQueueRegion: a.string(),
         socketQueueUrl: a.string(),
         socketQueueArn: a.string(),
-        modems: a.hasMany('Modem', 'clientId'),
     })
     .secondaryIndexes((index) => [
         index('isArchived').queryField('clientByArchived').name('byArchived'),

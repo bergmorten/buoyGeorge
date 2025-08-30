@@ -14,16 +14,19 @@ const selectionSet = [
     'isArchived',
     'isSandbox',
     'name',
-    'url',
+    'stackName',
+    'amplifyOutput',
     'appRegion',
-    'appId',
     'appSyncUrl',
-    'amplifyWebhook',
-    'environmentName',
     'lastDeploymentTime',
     'latestDeploymentVersion',
+    'url',
     'minimumUiVersion',
-    'amplifyOutput',
+    'appId',
+    'branch',
+    'amplifyWebhook',
+    'projectName',
+    'environmentName',
     'tcpBanned',
     'iridiumBanned',
     'iridiumQueueRegion',
@@ -35,10 +38,7 @@ const selectionSet = [
     'createdAt',
     'updatedAt',
 ] as const satisfies readonly Keys[];
-const fullSet = [
-    ...selectionSet,
-    'modems.*',
-] as const satisfies readonly Keys[];
+
 export type NewClient = Schema['Client']['createType'];
 export type UpdateClient = Schema['Client']['updateType'];
 
@@ -92,27 +92,9 @@ const getAll = async (
     }
 };
 
-const getFull = async (id: string) => {
-    const { data: fullUser, errors } = await client.models.Client.get(
-        { id },
-        {
-            selectionSet: fullSet,
-        },
-    );
-
-    if (errors) {
-        throw new Error(
-            `Failed to fetch user: ${errors.map((e) => e.message).join(', ')}`,
-        );
-    }
-    if (!fullUser) throw new Error(`User with id ${id} not found`);
-
-    return fullUser;
-};
-
 const add = async (newUser: NewClient) => {
     const { errors, data: user } = await client.models.Client.create(newUser, {
-        selectionSet: fullSet,
+        selectionSet: selectionSet,
     });
     if (errors) {
         throw new Error(
@@ -125,7 +107,7 @@ const update = async (updateUser: UpdateClient) => {
     const { errors, data: user } = await client.models.Client.update(
         updateUser,
         {
-            selectionSet: fullSet,
+            selectionSet: selectionSet,
         },
     );
     if (errors) {
@@ -142,7 +124,7 @@ const archive = async (id: string, archive: boolean) => {
             id,
             isArchived: archive ? 'true' : 'false',
         },
-        { selectionSet: fullSet },
+        { selectionSet: selectionSet },
     );
     if (errors) {
         throw new Error(
@@ -158,21 +140,20 @@ const startSubscriptions = (map: ShallowReactive<Map<string, Client>>) => {
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
     createdSub = client.models.Client.onCreate({ selectionSet }).subscribe({
         next: (data) => {
-            debugger;
             map.set(data.id, data as Client);
         },
         error: (error) => Bugsnag.notify(error),
     });
-    updatedSub = client.models.Client.onUpdate({ selectionSet }).subscribe({
+    updatedSub = client.models.Client.onUpdate().subscribe({
         next: (data) => {
-            debugger;
             map.set(data.id, data as Client);
         },
         error: (error) => Bugsnag.notify(error),
     });
-    deletedSub = client.models.Client.onDelete({ selectionSet }).subscribe({
+    deletedSub = client.models.Client.onDelete({
+        selectionSet: ['id'],
+    }).subscribe({
         next: (data) => {
-            debugger;
             map.delete(data.id);
         },
         error: (error) => Bugsnag.notify(error),
@@ -192,7 +173,6 @@ export default {
     startSubscriptions,
     stopSubscriptions,
     getAll,
-    getFull,
     add,
     update,
     archive,

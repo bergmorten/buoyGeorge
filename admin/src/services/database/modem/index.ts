@@ -32,10 +32,7 @@ const selectionSet = [
     'publicKey',
     'certificate',
 ] as const satisfies readonly Keys[];
-const fullSet = [
-    ...selectionSet,
-    'client.*',
-] as const satisfies readonly Keys[];
+
 //type Options = Parameters<typeof client.models.Fleet.list>[0]; // Kills the linter
 
 const isLoading = ref<boolean>(false);
@@ -77,29 +74,11 @@ const getAll = async (
     }
 };
 
-const getFull = async (id: string) => {
-    const { data: fullModem, errors } = await client.models.Modem.get(
-        { id },
-        {
-            selectionSet: fullSet,
-        },
-    );
-
-    if (errors) {
-        throw new Error(
-            `Failed to fetch modem: ${errors.map((e) => e.message).join(', ')}`,
-        );
-    }
-    if (!fullModem) throw new Error(`Modem with id ${id} not found`);
-
-    return fullModem;
-};
-
 const update = async (UpdateModem: UpdateModem) => {
     const { errors, data: user } = await client.models.Modem.update(
         UpdateModem,
         {
-            selectionSet: fullSet,
+            selectionSet: selectionSet,
         },
     );
     if (errors) {
@@ -152,7 +131,9 @@ const startSubscriptions = (map: ShallowReactive<Map<string, Modem>>) => {
         next: (data) => map.set(data.id, data as Modem),
         error: (error) => Bugsnag.notify(error),
     });
-    deletedSub = client.models.Modem.onDelete({ selectionSet }).subscribe({
+    deletedSub = client.models.Modem.onDelete({
+        selectionSet: ['id'],
+    }).subscribe({
         next: (data) => map.delete(data.id),
         error: (error) => Bugsnag.notify(error),
     });
@@ -172,7 +153,6 @@ export default {
     startSubscriptions,
     stopSubscriptions,
     getAll,
-    getFull,
     update,
     add,
     remove,

@@ -109,7 +109,7 @@ const startSubscriptions = (
         error: (error) => Bugsnag.notify(error),
     });
     deletedSub = client.models.ProjectFleet.onDelete({
-        selectionSet,
+        selectionSet: ['id'],
     }).subscribe({
         next: (data) => map.delete(data.id),
         error: (error) => Bugsnag.notify(error),

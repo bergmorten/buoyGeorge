@@ -160,7 +160,9 @@ const startSubscriptions = (map: ShallowReactive<Map<string, Producer>>) => {
         next: (data) => map.set(data.id, data as Producer),
         error: (error) => Bugsnag.notify(error),
     });
-    deletedSub = client.models.Producer.onDelete({ selectionSet }).subscribe({
+    deletedSub = client.models.Producer.onDelete({
+        selectionSet: ['id'],
+    }).subscribe({
         next: (data) => map.delete(data.id),
         error: (error) => Bugsnag.notify(error),
     });

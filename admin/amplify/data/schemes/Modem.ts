@@ -4,7 +4,6 @@ export const Modem = a
         id: a.id().required(),
         isBanned: a.boolean().required().default(false),
         clientId: a.id().required(),
-        client: a.belongsTo('Client', 'clientId'),
         type: a.enum(['IRIDIUM_SBD', 'IRIDIUM_IMT', 'CELLULAR']),
         identityString: a.string(),
         publicKey: a.string(),

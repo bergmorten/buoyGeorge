@@ -287,7 +287,7 @@ const switchClient = async (
     });
     if (oldClient && newClient && newClient.id === oldClient.id) return; // Should not happen
     credentialsStore.isSwitching = true;
-    debugger;
+
     try {
         let config: AwsConfig | undefined = undefined;
 
