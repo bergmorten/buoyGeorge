@@ -16,7 +16,18 @@
         "types": ["node"],
         "paths": {
             "$amplify/*": ["../.amplify/generated/*"],
-            "app/*": ["../*"]
+            "client": ["../src"],
+            "client/*": ["../src/*"],
+            "clientRoot": ["../client"],
+            "clientRoot/*": ["../client/*"],
+            "admin": ["../../admin/src"],
+            "admin/*": ["../../admin/src/*"],
+            "adminRoot": ["../../admin"],
+            "adminRoot/*": ["../../admin/*"],
+            "cmn": ["../../common/src"],
+            "cmn/*": ["../../common/src/*"],
+            "cmnRoot": ["../../common"],
+            "cmnRoot/*": ["../../common/*"]
         }
     }
 }

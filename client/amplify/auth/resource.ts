@@ -9,6 +9,7 @@ export { setupAuth } from './overrides';
  * @see https://docs.amplify.aws/gen2/build-a-backend/auth
  */
 export const auth = defineAuth({
+    name: 'client',
     loginWith: {
         email: true,
     },

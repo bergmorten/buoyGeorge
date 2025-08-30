@@ -1,4 +1,4 @@
-import type { FullUser } from 'app/src/services/database/users';
+import type { FullUser } from 'client/services/database/users';
 import type { AdminUpdateUserAttributesCommandInput } from '@aws-sdk/client-cognito-identity-provider';
 import {
     AdminCreateUserCommand,
@@ -10,12 +10,12 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import type { Logger } from '@aws-lambda-powertools/logger';
 //import { updatePinPoint } from './pinpoint';
-import type { USER_NOTIFY_SETTING } from 'app/src/services/database/users/models';
+import type { USER_NOTIFY_SETTING } from 'client/services/database/users/models';
 import _ from 'lodash';
 import { env } from '$amplify/env/user-CRUD';
 
 const region = env.AWS_REGION ?? env.AWS_DEFAULT_REGION;
-const UserPoolId = env.AMPLIFY_AUTH_USERPOOL_ID ?? '';
+const UserPoolId = env.CLIENT_USERPOOL_ID ?? '';
 
 const client = new CognitoIdentityProviderClient({
     region,

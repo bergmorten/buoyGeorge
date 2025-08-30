@@ -4,8 +4,8 @@ import {
     DeleteEmailIdentityCommand,
     GetEmailIdentityCommand,
 } from '@aws-sdk/client-pinpoint-email'; // ES Modules import
-import type { FullUser } from 'app/src/services/database/users';
-import type { USER_NOTIFY_SETTING } from 'app/src/services/database/users/models';
+import type { FullUser } from 'client/services/database/users';
+import type { USER_NOTIFY_SETTING } from 'client/services/database/users/models';
 import type { Logger } from '@aws-lambda-powertools/logger';
 
 const PinPointRegion = 'eu-central-1'; // THIS is common for all clients

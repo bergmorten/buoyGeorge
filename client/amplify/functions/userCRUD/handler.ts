@@ -5,7 +5,7 @@ import middy from '@middy/core';
 import { Tracer } from '@aws-lambda-powertools/tracer';
 import { captureLambdaHandler } from '@aws-lambda-powertools/tracer/middleware';
 import eventNormalizerMiddleware from '@middy/event-normalizer';
-import type { FullUser } from 'app/src/services/database/users';
+import type { FullUser } from 'client/services/database/users';
 import { insertUser, modifyUser, deleteUser, hasChanges } from './user';
 import {
     BatchProcessor,
