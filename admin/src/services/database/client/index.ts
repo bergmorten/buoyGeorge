@@ -157,15 +157,24 @@ let deletedSub: Subscription | null = null;
 const startSubscriptions = (map: ShallowReactive<Map<string, Client>>) => {
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
     createdSub = client.models.Client.onCreate({ selectionSet }).subscribe({
-        next: (data) => map.set(data.id, data as Client),
+        next: (data) => {
+            debugger;
+            map.set(data.id, data as Client);
+        },
         error: (error) => Bugsnag.notify(error),
     });
     updatedSub = client.models.Client.onUpdate({ selectionSet }).subscribe({
-        next: (data) => map.set(data.id, data as Client),
+        next: (data) => {
+            debugger;
+            map.set(data.id, data as Client);
+        },
         error: (error) => Bugsnag.notify(error),
     });
     deletedSub = client.models.Client.onDelete({ selectionSet }).subscribe({
-        next: (data) => map.delete(data.id),
+        next: (data) => {
+            debugger;
+            map.delete(data.id);
+        },
         error: (error) => Bugsnag.notify(error),
     });
 };

@@ -3,23 +3,23 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        component: () => import('layouts/PublicLayout.vue'),
+        component: () => import('admin/layouts/PublicLayout.vue'),
         children: [
             {
                 path: '',
                 name: 'guest',
-                component: () => import('pages/IndexPage.vue'),
+                component: () => import('admin/pages/IndexPage.vue'),
             },
         ],
     },
     {
         path: '/',
-        component: () => import('layouts/AdminLayout.vue'),
+        component: () => import('admin/layouts/AdminLayout.vue'),
         children: [
             {
                 path: '',
                 name: 'main',
-                component: () => import('pages/ClientPage.vue'),
+                component: () => import('admin/pages/admin/ClientPage.vue'),
                 meta: {
                     menuSection: 'AdminClients',
                     requiresAuth: true,
@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: '',
                 name: 'admin_clients',
-                component: () => import('pages/ClientPage.vue'),
+                component: () => import('admin/pages/admin/ClientPage.vue'),
                 meta: {
                     menuSection: 'AdminClients',
                     requiresAuth: true,
@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: '',
                 name: 'blank_page',
-                component: () => import('pages/BlankPage.vue'),
+                component: () => import('admin/pages/BlankPage.vue'),
                 meta: {
                     menuSection: 'Main',
                     requiresAuth: true,
@@ -49,7 +49,7 @@ const routes: RouteRecordRaw[] = [
     // but you can also remove it
     {
         path: '/:catchAll(.*)*',
-        component: () => import('pages/ErrorNotFound.vue'),
+        component: () => import('admin/pages/ErrorNotFound.vue'),
     },
 ];
 

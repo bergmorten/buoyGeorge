@@ -283,13 +283,13 @@ import { useDialogPluginComponent, useQuasar, copyToClipboard } from 'quasar';
 import { logger } from 'cmn/lib/logger';
 import { db } from 'admin/services/database';
 import type { Client, UpdateClient } from 'admin/services/database/client';
-import { wait } from 'admin/lib/tools';
+import { wait } from 'cmn/lib/tools';
 import {
     type ClientVersion,
     parseAmplifyVersion,
     version2String,
-} from 'admin/lib/version';
-import { isUrlValid } from 'admin/lib/validation';
+} from 'cmn/lib/version';
+import { isUrlValid } from 'cmn/lib/validation';
 
 const props = defineProps<{
     client: Client;

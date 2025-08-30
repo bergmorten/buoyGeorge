@@ -64,6 +64,14 @@ export default defineConfig((/* ctx */) => {
             // viteVuePluginOptions: {},
             alias: {
                 cmn: fileURLToPath(new URL('../common/src', import.meta.url)),
+                admin: fileURLToPath(new URL('../admin/src', import.meta.url)),
+                adminRoot: fileURLToPath(new URL('../admin', import.meta.url)),
+                client: fileURLToPath(
+                    new URL('../client/src', import.meta.url),
+                ),
+                clientRoot: fileURLToPath(
+                    new URL('../client', import.meta.url),
+                ),
             },
             vitePlugins: [
                 [

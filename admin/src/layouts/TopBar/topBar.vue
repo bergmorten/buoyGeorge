@@ -46,12 +46,12 @@
 import { watch } from 'vue';
 //import { isConnected } from '@/lib/graphQL/lib/subscription';
 //import { useAlerts } from '@/lib/alerts';
-import { useDrawerStore } from 'admin/stores/drawer';
-import { useRouterStore } from 'admin/stores/route';
+import { useDrawerStore } from 'cmn/stores/drawer';
+import { useRouterStore } from 'cmn/stores/route';
 //import { useElectron } from '@hefring/commons/electron';
 import { useQuasar } from 'quasar';
 //import AlertCenter from '@/components/AlertCenter/alertCenter.vue';
-import StatusRadio from 'admin/components/Status/StatusRadio.vue';
+import StatusRadio from 'cmn/components/Status/StatusRadio.vue';
 import { storeToRefs } from 'pinia';
 import { db } from 'admin/services/database';
 

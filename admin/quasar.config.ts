@@ -2,6 +2,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app/wrappers';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig((/* ctx */) => {
     return {
@@ -61,7 +62,17 @@ export default defineConfig((/* ctx */) => {
 
             // extendViteConf (viteConf) {},
             // viteVuePluginOptions: {},
-
+            alias: {
+                cmn: fileURLToPath(new URL('../common/src', import.meta.url)),
+                admin: fileURLToPath(new URL('../admin/src', import.meta.url)),
+                adminRoot: fileURLToPath(new URL('../admin', import.meta.url)),
+                client: fileURLToPath(
+                    new URL('../client/src', import.meta.url),
+                ),
+                clientRoot: fileURLToPath(
+                    new URL('../client', import.meta.url),
+                ),
+            },
             vitePlugins: [
                 [
                     'vite-plugin-checker',

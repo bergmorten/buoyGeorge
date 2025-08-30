@@ -5,7 +5,7 @@
     >
         <q-card class="q-dialog-plugin meta-page">
             <q-card-section class="text-bold text-h6 text-center">
-                Org: {{ orgName }}
+                Org: {{ state.name }}
             </q-card-section>
             <q-card-section
                 v-if="multipleOrgDetected"
@@ -20,14 +20,14 @@
                         <div class="col-4 q-pr-md column">
                             <div class="text-h6 text-center">Primary</div>
                             <q-input
-                                v-model="name"
+                                v-model="state.name"
                                 dense
                                 outlined
                                 label="Organization name"
                                 :rules="[(val) => !!val || 'Field is required']"
                             />
                             <q-input
-                                v-model="url"
+                                v-model="state.url"
                                 dense
                                 outlined
                                 label="Company homepage"
@@ -36,7 +36,7 @@
                             />
 
                             <q-input
-                                v-model="phone"
+                                v-model="state.phone"
                                 dense
                                 outlined
                                 label="Company Phone (with country code)"
@@ -63,35 +63,35 @@
                         <div class="col-4 q-pr-md column">
                             <div class="text-h6 text-center">Address</div>
                             <q-input
-                                v-model="address1"
+                                v-model="state.address1"
                                 dense
                                 outlined
                                 label="Address line 1"
                                 :rules="[(val) => !!val || 'Field is required']"
                             />
                             <q-input
-                                v-model="address2"
+                                v-model="state.address2"
                                 dense
                                 outlined
                                 label="Address line 2"
                                 :rules="[(val) => true]"
                             />
                             <q-input
-                                v-model="city"
+                                v-model="state.city"
                                 dense
                                 outlined
                                 label="City"
                                 :rules="[(val) => !!val || 'Field is required']"
                             />
                             <q-input
-                                v-model="state"
+                                v-model="state.state"
                                 dense
                                 outlined
                                 label="State or Province"
                                 :rules="[(val) => !!val || 'Field is required']"
                             />
                             <q-input
-                                v-model="zip"
+                                v-model="state.zip"
                                 dense
                                 outlined
                                 label="Zip code"
@@ -331,7 +331,7 @@ const resetOrg = () => {
 const orgAdmins = computed(() => {
     const data = db.users.values();
     if (!data) return [];
-    return data.filter((el) => el.orgAdmin);
+    return Array.from(data.filter((el) => el.orgAdmin));
 });
 
 const countries = Object.entries(getCodeList())

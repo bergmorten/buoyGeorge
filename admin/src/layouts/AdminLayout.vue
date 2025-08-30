@@ -197,9 +197,9 @@ import { Amplify } from 'aws-amplify';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { fetchMFAPreference, signOut } from 'aws-amplify/auth';
 import { useQuasar } from 'quasar';
-import ContextHelp from 'admin/components/Help/ContextHelp.vue';
-import { useDrawerStore } from 'admin/stores/drawer';
-import { useRouterStore } from 'admin/stores/route';
+import ContextHelp from 'cmn/components/Help/ContextHelp.vue';
+import { useDrawerStore } from 'cmn/stores/drawer';
+import { useRouterStore } from 'cmn/stores/route';
 import TopBar from './TopBar/topBar.vue';
 import packageJson from 'adminRoot/package.json';
 import { storeToRefs } from 'pinia';
@@ -212,9 +212,9 @@ import {
     signOut as AuthSignOut,
     fetchAuthSession,
 } from 'aws-amplify/auth';
-import { wait } from 'admin/lib/tools';
+import { wait } from 'cmn/lib/tools';
 import { useRouter } from 'vue-router';
-import { useCredentialStore } from 'admin/stores/credentials';
+import { useCredentialStore } from 'cmn/stores/credentials';
 
 const $q = useQuasar();
 const router = useRouter();

@@ -325,7 +325,7 @@
 import type { ResourcesConfig } from 'aws-amplify';
 import { Amplify } from 'aws-amplify';
 import { LocalStorage, useDialogPluginComponent, useQuasar } from 'quasar';
-import { getPasswordStrength, PasswordStrength } from 'src/lib/validation';
+import { getPasswordStrength, PasswordStrength } from 'cmn/lib/validation';
 import { computed, defineComponent, ref } from 'vue';
 import {
     confirmResetPassword,
@@ -339,8 +339,8 @@ import {
 //import { getClientConfigs } from '@/services/restAPI/clientConfig';
 import { logger } from 'cmn/lib/logger';
 import { onMounted } from 'vue';
-import { wait } from 'src/lib/tools';
-import { useCredentialStore } from 'src/stores/credentials';
+import { wait } from 'cmn/lib/tools';
+import { useCredentialStore } from 'cmn/stores/credentials';
 // import { SavePassword } from 'capacitor-ios-autofill-save-password';
 
 interface ClientExport {

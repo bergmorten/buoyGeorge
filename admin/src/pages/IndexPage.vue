@@ -64,7 +64,7 @@ import { hasExternalConfig } from 'admin/boot/amplify';
 import { useCognitoUserStore } from 'cmn/stores/cognitoUser';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
-import LoginDialog from 'admin/dialogs/Login/loginDialog.vue';
+import LoginDialog from 'cmn/dialogs/Login/loginDialog.vue';
 import packageJson from 'adminRoot/package.json';
 
 // import { useUserDb } from '@/lib/graphQL';

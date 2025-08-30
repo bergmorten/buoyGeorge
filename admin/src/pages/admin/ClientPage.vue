@@ -127,7 +127,7 @@ const clientColumns: QTableProps['columns'] = [
         align: 'left',
         format: (val: string) => {
             if (!val) return 'N/A';
-            return new Date(val).toDateString();
+            return new Date(val).toLocaleDateString();
         },
     },
     {
@@ -147,7 +147,7 @@ const pagination = {
 
 const isLoading = db.client.isLoading;
 
-const showActiveClients = () => {
+const activeClients = () => {
     const allRows = Array.from(db.clients.values());
 
     if (filter.value) {
@@ -170,7 +170,7 @@ const updateArchivedClients = async () => {
 const clientRows = computed(() => {
     const searchValue = filter.value.toLowerCase();
     const selected = (
-        showArchived.value ? archivedClients.value : showActiveClients()
+        showArchived.value ? archivedClients.value : activeClients()
     ).filter((el) => {
         if (searchValue && !el.name.toLowerCase().includes(searchValue))
             return false;

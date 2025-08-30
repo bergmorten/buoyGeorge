@@ -21,8 +21,8 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { useDrawerStore } from 'admin/stores/drawer';
-import ContextHelp from 'admin/components/Help/ContextHelp.vue';
+import { useDrawerStore } from 'cmn/stores/drawer';
+import ContextHelp from 'cmn/components/Help/ContextHelp.vue';
 import { storeToRefs } from 'pinia';
 
 const drawerStore = useDrawerStore();

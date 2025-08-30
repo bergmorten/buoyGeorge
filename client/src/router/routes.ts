@@ -3,24 +3,24 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        component: () => import('layouts/PublicLayout.vue'),
+        component: () => import('client/layouts/PublicLayout.vue'),
         children: [
             {
                 path: '',
                 name: 'guest',
-                component: () => import('pages/IndexPage.vue'),
+                component: () => import('client/pages/IndexPage.vue'),
             },
         ],
     },
 
     {
         path: '/',
-        component: () => import('layouts/UserLayout.vue'),
+        component: () => import('client/layouts/UserLayout.vue'),
         children: [
             {
                 path: '',
                 name: 'main',
-                component: () => import('pages/IndexPage.vue'),
+                component: () => import('client/pages/IndexPage.vue'),
                 meta: {
                     menuSection: 'Main',
                     requiresAuth: true,
@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: '',
                 name: 'blank_page',
-                component: () => import('pages/BlankPage.vue'),
+                component: () => import('client/pages/BlankPage.vue'),
                 meta: {
                     menuSection: 'Main',
                     requiresAuth: true,
@@ -61,7 +61,8 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'management/users',
                 name: 'management_users',
-                component: () => import('pages/management/users/UsersPage.vue'),
+                component: () =>
+                    import('client/pages/management/users/UsersPage.vue'),
                 meta: {
                     menuSection: 'Management',
                     subSection: 'Users',
@@ -100,7 +101,7 @@ const routes: RouteRecordRaw[] = [
     // but you can also remove it
     {
         path: '/:catchAll(.*)*',
-        component: () => import('pages/ErrorNotFound.vue'),
+        component: () => import('client/pages/ErrorNotFound.vue'),
     },
 ];
 
