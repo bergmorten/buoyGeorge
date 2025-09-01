@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'meta',
                 name: 'client_meta',
-                component: () => import('admin/pages/clients/OrgMeta.vue'),
+                component: () => import('admin/pages/clients/Org/OrgMeta.vue'),
                 meta: {
                     menuSection: 'Management',
                     subSection: 'Meta',
@@ -89,6 +89,18 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     menuSection: 'Management',
                     subSection: 'Projects',
+                    requiresAuth: true,
+                    requiresSuper: true,
+                },
+            },
+            {
+                path: 'management/demo',
+                name: 'management_demo',
+                component: () =>
+                    import('admin/pages/clients/Demo/DemoData.vue'),
+                meta: {
+                    menuSection: 'Management',
+                    subSection: 'Demo',
                     requiresAuth: true,
                     requiresSuper: true,
                 },

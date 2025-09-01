@@ -161,6 +161,21 @@
                             </q-item-section>
                             <q-item-section>Billing</q-item-section>
                         </q-item>
+
+                        <q-item
+                            v-ripple
+                            clickable
+                            class="subitem"
+                            :to="{
+                                name: 'management_demo',
+                            }"
+                            :class="{ active: subSection === 'Demo' }"
+                        >
+                            <q-item-section avatar>
+                                <q-icon name="casino" />
+                            </q-item-section>
+                            <q-item-section>Fill Demo Data</q-item-section>
+                        </q-item>
                     </template>
                 </q-list>
                 <q-space />
@@ -253,12 +268,14 @@ import {
 import { wait } from 'cmn/lib/tools';
 import { useRouter } from 'vue-router';
 import { useCredentialStore } from 'cmn/stores/credentials';
+import { useCognitoUserStore } from 'cmn/stores/cognitoUser';
 
 const $q = useQuasar();
 const router = useRouter();
 const drawerStore = useDrawerStore();
 const routerStore = useRouterStore();
 const credentialsStore = useCredentialStore();
+const cognitoUserStore = useCognitoUserStore();
 const { menuOpen, helpOpen } = storeToRefs(drawerStore);
 const showHelp = ref(false);
 const version = packageJson.version;
@@ -331,7 +348,7 @@ const switchClient = async (
     try {
         let config: AwsConfig | undefined = undefined;
         let useSRP_AUTH = true;
-
+        debugger;
         if (newClient) {
             useSRP_AUTH = false;
             const awsExport = newClient.amplifyOutput as unknown as
@@ -386,7 +403,7 @@ const switchClient = async (
 
         const credentials = await fetchAuthSession();
         if (!credentials) throw new Error('No credentials');
-
+        await cognitoUserStore.updateUser();
         if (newClient) {
             adminMode.value = false;
             activeClient.value = newClient;
@@ -403,6 +420,7 @@ const switchClient = async (
             await router.push({ name: 'admin_clients' });
         }
     } catch (error) {
+        debugger;
         logger.warn($q, 'Could not sign in to this client', error);
         Amplify.configure(awsOriginalConfig);
         await signOut();
@@ -451,6 +469,7 @@ onMounted(async () => {
             type: 'negative',
             message: 'Failed to start database connection',
         });
+        debugger;
         await signOut();
         await router.push({ name: 'guest' });
     }

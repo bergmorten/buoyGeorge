@@ -44,11 +44,13 @@ export default defineRouter(function (/* { store, ssrContext } */) {
 
         if (to.meta.requiresAuth) {
             if (!cognitoUserStore.isValidUser) {
+                debugger;
                 next({ name: 'guest' });
                 return;
             }
             if (to.meta.requiresSuper) {
                 if (!cognitoUserStore.isSuperAdmin) {
+                    debugger;
                     next({ name: 'guest' });
                     return;
                 }

@@ -84,7 +84,7 @@ import { clientDb } from 'client/services/database';
 import type { Fleet } from 'client/services/database/fleets';
 import EditFleetProjectsDialog from 'cmn/dialogs/Management/fleetProjects/EditFleetProjects.vue';
 import EditFleetUsersDialog from 'cmn/dialogs/Management/fleetUsers/EditFleetUsers.vue';
-//import EditFleetproducersDialog from 'client/dialogs/Management/editFleetProducers.vue';
+import EditFleetProducersDialog from 'cmn/dialogs/Management/fleetProducers/EditFleetProducers.vue';
 import FleetManagement from 'cmn/dialogs/Management/fleet/FleetManagement.vue';
 import FleetsHelp from './FleetsHelp.vue';
 import { useHelpStore } from 'cmn/stores/help';
@@ -171,7 +171,7 @@ const editUsers = (fleet: Fleet) => {
 
 const editProducers = (fleet: Fleet) => {
     $q.dialog({
-        // component: EditFleetProducersDialog,
+        component: EditFleetProducersDialog,
         componentProps: { fleet },
     });
 };

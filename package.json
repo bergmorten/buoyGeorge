@@ -8,12 +8,10 @@
     "private": true,
     "license": "UNLICENSED",
     "workspaces": [
-    "client",
-    "admin"
-  ],
-    "scripts": {
-
-    },
+        "client",
+        "admin"
+    ],
+    "scripts": {},
     "dependencies": {
         "@bugsnag/browser-performance": "^3.0.0",
         "@bugsnag/js": "^8.4.0",
@@ -30,22 +28,23 @@
         "lodash": "^4.17.21",
         "pinia": "^3.0.1",
         "quasar": "^2.16.0",
+        "unique-names-generator": "^4.7.1",
         "valid-url": "^1.0.9",
         "vue": "^3.4.18",
         "vue-router": "^4.0.12"
     },
     "devDependencies": {
-        "@aws-sdk/client-appsync": "^3.873.0",
-        "@aws-sdk/client-dynamodb": "^3.873.0",
-        "@aws-sdk/client-pinpoint-email": "^3.873.0",
-        "@aws-sdk/client-sqs": "^3.875.0",
         "@aws-amplify/backend": "^1.16.1",
         "@aws-amplify/backend-cli": "^1.8.0",
         "@aws-amplify/cli-extensibility-helper": "^3.0.39",
         "@aws-lambda-powertools/batch": "^2.25.1",
         "@aws-lambda-powertools/logger": "^2.25.1",
         "@aws-lambda-powertools/tracer": "^2.25.1",
+        "@aws-sdk/client-appsync": "^3.873.0",
         "@aws-sdk/client-cognito-identity-provider": "^3.865.0",
+        "@aws-sdk/client-dynamodb": "^3.873.0",
+        "@aws-sdk/client-pinpoint-email": "^3.873.0",
+        "@aws-sdk/client-sqs": "^3.875.0",
         "@aws-sdk/signature-v4": "^3.370.0",
         "@eslint/js": "^9.14.0",
         "@middy/core": "^6.4.3",
