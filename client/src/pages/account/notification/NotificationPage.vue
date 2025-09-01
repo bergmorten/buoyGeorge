@@ -96,7 +96,7 @@ import { useQuasar } from 'quasar';
 import { notImplemented, fullHeight } from 'cmn/composable/helpers';
 import type { USER_NOTIFY_SETTING } from 'client/services/database/users/models';
 import { AlertSeverity } from 'client/services/database/users/models';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 
 interface NotifyMeta {
     value: AlertSeverity | null;
@@ -213,11 +213,11 @@ watchEffect(async () => {
         if (!userId) {
             throw new Error('User ID is not set');
         }
-        const user = db.users.get(userStore.userId);
+        const user = clientDb.users.get(userStore.userId);
         if (!user) {
             throw new Error('User ID is not set');
         } else {
-            const fullUser = await db.user.getFull(user.id);
+            const fullUser = await clientDb.user.getFull(user.id);
             if (!fullUser) {
                 throw new Error('Full user not found');
             }

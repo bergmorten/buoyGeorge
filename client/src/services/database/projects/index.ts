@@ -1,11 +1,11 @@
-import { generateClient } from 'aws-amplify/data';
+import type { generateClient } from 'aws-amplify/data';
 import { ref } from 'vue';
 import { type Schema } from 'clientRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import type { ShallowReactive } from 'vue';
 import Bugsnag from '@bugsnag/js';
 
-const client = generateClient<Schema>({ authMode: 'userPool' });
+let client: ReturnType<typeof generateClient<Schema>>;
 type Keys = keyof Schema['Project']['type']; // Cause linter 100% CPU
 export type Project = Readonly<Schema['Project']['type']>;
 export type NewProject = Schema['Project']['createType'];
@@ -118,7 +118,11 @@ const archive = async (id: string, archive: boolean) => {
 let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
 let deletedSub: Subscription | null = null;
-const startSubscriptions = (map: ShallowReactive<Map<string, Project>>) => {
+const startSubscriptions = (
+    connection: ReturnType<typeof generateClient<Schema>>,
+    map: ShallowReactive<Map<string, Project>>,
+) => {
+    client = connection;
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
     createdSub = client.models.Project.onCreate({ selectionSet }).subscribe({
         next: (data) => map.set(data.id, data as Project),

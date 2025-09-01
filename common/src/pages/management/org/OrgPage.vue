@@ -114,7 +114,7 @@ import { fullHeight } from 'cmn/composable/helpers';
 import { getName as getCountryName } from 'country-list';
 import { logger } from 'cmn/lib/logger';
 import { openURL, useQuasar } from 'quasar';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { ORG_CONTACT_INFO } from 'client/services/database/org/models';
 import UploadSVG from 'client/assets/svg/upload.svg';
 import OrgHelp from './OrgHelp.vue';
@@ -127,7 +127,7 @@ const uploadPercentage = ref(0);
 const uploading = ref(false);
 let fileHandle: FileSystemFileHandle | undefined = undefined;
 
-const organization = db.organization;
+const organization = clientDb.organization;
 
 const contactInfo = computed<ORG_CONTACT_INFO | null>(() => {
     const orgEntry = organization.value;

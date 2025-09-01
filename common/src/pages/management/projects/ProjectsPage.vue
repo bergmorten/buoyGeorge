@@ -76,7 +76,7 @@ import {
     getCurrentInstance,
 } from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { Project } from 'client/services/database/projects';
 import type { Ref } from 'vue';
 import AvataaarImage from 'cmn/components/Avataaars/avataaarImage.vue';
@@ -114,10 +114,10 @@ const pagination = {
     rowsPerPage: 10,
 };
 
-const projectIsLoading = db.project.isLoading;
+const projectIsLoading = clientDb.project.isLoading;
 
 const showActiveProjects = () => {
-    const allRows = Array.from(db.projects.values());
+    const allRows = Array.from(clientDb.projects.values());
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();
@@ -131,7 +131,7 @@ const showActiveProjects = () => {
 
 const updateArchivedProjects = async () => {
     try {
-        const allRows = await db.project.getAll(true);
+        const allRows = await clientDb.project.getAll(true);
 
         if (filter.value) {
             const searchValue = filter.value.toLowerCase();

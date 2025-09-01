@@ -83,7 +83,7 @@ import { fullHeight } from 'cmn/composable/helpers';
 import { logger } from 'cmn/lib/logger';
 import { useCognitoUserStore } from 'cmn/stores/cognitoUser';
 import AvataaarImage from 'cmn/components/Avataaars/avataaarImage.vue';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 //import EnableOTPDialog from '@/dialogs/Profile/enableOTP.vue';
 //import InfoDeployment from '@/dialogs/Deployments/infoDeployment.vue';
 import ProfileImageDialog from 'cmn/dialogs/ProfileImage/profileImage.vue';
@@ -218,7 +218,7 @@ onMounted(async () => {
         if (!userId) {
             throw new Error('User ID is not set');
         }
-        const user = await db.user.getFull(userStore.userId);
+        const user = await clientDb.user.getFull(userStore.userId);
         state.name = user.fullName;
         state.email = user.email;
         state.phone = user.phone ?? 'N/A';

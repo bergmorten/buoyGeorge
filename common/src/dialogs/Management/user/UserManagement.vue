@@ -150,7 +150,7 @@ import { isAWSPhone, isValidEmail } from 'cmn/lib/validation';
 import { logger } from 'cmn/lib/logger';
 import AvataaarImage from 'cmn/components/Avataaars/avataaarImage.vue';
 import ProfileImageDialog from 'cmn/dialogs/ProfileImage/profileImage.vue';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { User, NewUser, UpdateUser } from 'client/services/database/users';
 import { wait } from 'cmn/lib/tools';
 import UserHelp from './UserHelp.vue';
@@ -193,7 +193,7 @@ const isEditing = props.user !== undefined;
 
 const resetUser = async () => {
     if (props.user) {
-        const fullUser = await db.user.getFull(props.user.id);
+        const fullUser = await clientDb.user.getFull(props.user.id);
         state.id = fullUser.id;
         state.isArchived = fullUser.isArchived;
         state.fullName = fullUser.fullName;
@@ -240,7 +240,7 @@ const validEmail = async (email: string) => {
     try {
         if (!isValidEmail(email)) return 'Email is not valid';
         if (email === props.user?.email) return true;
-        const existing = await db.user.getAll(true, {
+        const existing = await clientDb.user.getAll(true, {
             filter: { email: { eq: email } },
         });
         const first = existing[0];
@@ -292,7 +292,7 @@ const createUser = async () => {
             isArchived: 'false',
         };
 
-        await db.user.add(newUser);
+        await clientDb.user.add(newUser);
         onDialogOK();
     } catch (error: unknown) {
         printErrorMessage(error, 'Could not create user');
@@ -319,7 +319,7 @@ const updateUser = async () => {
             avatar: state.avatar,
         };
 
-        await db.user.update(updatedUser);
+        await clientDb.user.update(updatedUser);
         onDialogOK();
     } catch (error: unknown) {
         printErrorMessage(error, 'Could not update user');
@@ -358,7 +358,7 @@ const archiveUser = () => {
             working.value = true;
             try {
                 if (!props.user) return;
-                await db.user.archive(props.user.id, true);
+                await clientDb.user.archive(props.user.id, true);
                 logger.log($q, 'User archived');
                 onDialogOK();
             } catch (error: unknown) {
@@ -398,7 +398,7 @@ const unArchiveUser = () => {
             working.value = true;
             try {
                 if (!props.user) return;
-                await db.user.archive(props.user.id, false);
+                await clientDb.user.archive(props.user.id, false);
                 logger.log($q, 'User archived');
                 onDialogOK();
             } catch (error: unknown) {
@@ -440,11 +440,11 @@ const sendInvite = () => {
 
         try {
             if (!props.user) throw new Error('No user to send invite to');
-            const fullUser = await db.user.getFull(props.user.id);
+            const fullUser = await clientDb.user.getFull(props.user.id);
             const resendInvite = !fullUser.resendInvite
                 ? 1
                 : fullUser.resendInvite + 1;
-            await db.user.update({
+            await clientDb.user.update({
                 id: props.user.id,
                 resendInvite,
             });
@@ -458,10 +458,6 @@ const sendInvite = () => {
     });
 };
 
-if (isEditing) {
-    resetUser();
-}
-
 watch(state, async () => {
     try {
         formValid.value = await verifyForm(state);
@@ -471,14 +467,22 @@ watch(state, async () => {
 });
 
 onMounted(() => {
-    const myName = getCurrentInstance()?.type.__name;
+    try {
+        if (isEditing) {
+            await resetUser();
+        }
 
-    if (myName)
-        helpStore.addHelp({
-            name: myName,
-            type: 'dialog',
-            helpPage: UserHelp,
-        });
+        const myName = getCurrentInstance()?.type.__name;
+
+        if (myName)
+            helpStore.addHelp({
+                name: myName,
+                type: 'dialog',
+                helpPage: UserHelp,
+            });
+    } catch (e) {
+        logger.error($q, 'Error occurred while mounting UserManagement:', e);
+    }
 });
 onUnmounted(() => {
     const myName = getCurrentInstance()?.type.__name;

@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
+import { watch, computed } from 'vue';
 //import { isConnected } from '@/lib/graphQL/lib/subscription';
 //import { useAlerts } from '@/lib/alerts';
 import { useDrawerStore } from 'cmn/stores/drawer';
@@ -53,17 +53,28 @@ import { useQuasar } from 'quasar';
 //import AlertCenter from '@/components/AlertCenter/alertCenter.vue';
 import StatusRadio from 'cmn/components/Status/StatusRadio.vue';
 import { storeToRefs } from 'pinia';
-import { db } from 'admin/services/database';
-
+import { adminDb } from 'admin/services/database';
+import { clientDb } from 'client/services/database';
+import { useCredentialStore } from 'cmn/stores/credentials';
 //import ControlBar from '../ControlBar/controlBar.vue';
 
 const $q = useQuasar();
 const drawerStore = useDrawerStore();
 const routerStore = useRouterStore();
+const credentialsStore = useCredentialStore();
 const { helpOpen } = storeToRefs(drawerStore);
 //const isElectron = $q.platform.is.electron ? true : false;
 
-const { isConnected } = db;
+const isConnected = computed(() => {
+    if (
+        adminDb.isConnected ||
+        clientDb.isConnected ||
+        credentialsStore.isSwitching
+    ) {
+        return true;
+    }
+    return false;
+});
 //const { minimize, toggle: toggleWindow, close: windowClose } = useElectron();
 
 // const { highestAlertValue: alertLevel } = useAlerts();

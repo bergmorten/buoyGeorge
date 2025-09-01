@@ -134,6 +134,14 @@ const setUpHubEvents = () => {
 onMounted(async () => {
     console.debug('App mounted');
 
+    if (!credentialsStore.password || !credentialsStore.username) {
+        await signOut();
+        cognitoUserStore.invalidateUser();
+        //  await clearOfflineDb();
+        void router.push({ name: 'guest' }).catch((e) => {
+            console.error('Error pushing guest route', e);
+        });
+    }
     // eventBus.on('lostAuth', showLogin);
     // try {
     //     await useDimming.updateDocument();

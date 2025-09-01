@@ -1,11 +1,11 @@
-import { generateClient } from 'aws-amplify/data';
 import { ref } from 'vue';
 import { type Schema } from 'adminRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import type { ShallowReactive } from 'vue';
 import Bugsnag from '@bugsnag/js';
+import type { generateClient } from 'aws-amplify/data';
 
-const client = generateClient<Schema>({ authMode: 'userPool' });
+let admin: ReturnType<typeof generateClient<Schema>>;
 type Keys = keyof Schema['Modem']['type'] | 'client.*';
 
 export type Modem = Readonly<Schema['Modem']['type']>;
@@ -38,7 +38,7 @@ const selectionSet = [
 const isLoading = ref<boolean>(false);
 
 const getAll = async (
-    options?: Parameters<typeof client.models.Modem.list>[0],
+    options?: Parameters<typeof admin.models.Modem.list>[0],
 ) => {
     let token: string | null = null;
     const modems = [];
@@ -49,7 +49,7 @@ const getAll = async (
                 data: modemBatch,
                 errors,
                 nextToken,
-            } = await client.models.Modem.list({
+            } = await admin.models.Modem.list({
                 ...options,
                 selectionSet,
                 limit: 100,
@@ -75,7 +75,7 @@ const getAll = async (
 };
 
 const update = async (UpdateModem: UpdateModem) => {
-    const { errors, data: user } = await client.models.Modem.update(
+    const { errors, data: user } = await admin.models.Modem.update(
         UpdateModem,
         {
             selectionSet: selectionSet,
@@ -90,7 +90,7 @@ const update = async (UpdateModem: UpdateModem) => {
 };
 
 const add = async (newModem: NewModem) => {
-    const { errors, data: modem } = await client.models.Modem.create(newModem, {
+    const { errors, data: modem } = await admin.models.Modem.create(newModem, {
         selectionSet,
     });
     if (errors) {
@@ -102,7 +102,7 @@ const add = async (newModem: NewModem) => {
 };
 const remove = async (id: string) => {
     // In case we must add additional logic to clean up invisible modems
-    const { errors, data: modem } = await client.models.Modem.delete(
+    const { errors, data: modem } = await admin.models.Modem.delete(
         {
             id,
         },
@@ -121,17 +121,21 @@ const remove = async (id: string) => {
 let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
 let deletedSub: Subscription | null = null;
-const startSubscriptions = (map: ShallowReactive<Map<string, Modem>>) => {
+const startSubscriptions = (
+    connection: ReturnType<typeof generateClient<Schema>>,
+    map: ShallowReactive<Map<string, Modem>>,
+) => {
+    admin = connection;
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
-    createdSub = client.models.Modem.onCreate({ selectionSet }).subscribe({
+    createdSub = admin.models.Modem.onCreate({ selectionSet }).subscribe({
         next: (data) => map.set(data.id, data as Modem),
         error: (error) => Bugsnag.notify(error),
     });
-    updatedSub = client.models.Modem.onUpdate({ selectionSet }).subscribe({
+    updatedSub = admin.models.Modem.onUpdate({ selectionSet }).subscribe({
         next: (data) => map.set(data.id, data as Modem),
         error: (error) => Bugsnag.notify(error),
     });
-    deletedSub = client.models.Modem.onDelete({
+    deletedSub = admin.models.Modem.onDelete({
         selectionSet: ['id'],
     }).subscribe({
         next: (data) => map.delete(data.id),

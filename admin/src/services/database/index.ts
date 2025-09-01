@@ -6,8 +6,11 @@ import { CONNECTION_STATE_CHANGE } from 'aws-amplify/data';
 import { Hub } from 'aws-amplify/utils';
 import Bugsnag from '@bugsnag/js';
 import { Notify } from 'quasar';
+import { type Schema } from 'adminRoot/amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
 
 const useDatabase = () => {
+    let admin: ReturnType<typeof generateClient<Schema>> | undefined;
     const clients = shallowReactive<Map<string, Client>>(new Map());
     const modems = shallowReactive<Map<string, Modem>>(new Map());
 
@@ -57,8 +60,9 @@ const useDatabase = () => {
     };
     const start = async () => {
         clear();
-        client.startSubscriptions(clients);
-        modem.startSubscriptions(modems);
+        admin = generateClient<Schema>({ authMode: 'userPool' });
+        client.startSubscriptions(admin, clients);
+        modem.startSubscriptions(admin, modems);
 
         await sync();
         hasStarted = true;
@@ -67,7 +71,7 @@ const useDatabase = () => {
     const stop = () => {
         client.stopSubscriptions();
         modem.stopSubscriptions();
-
+        admin = undefined;
         hasStarted = false;
     };
 
@@ -89,4 +93,4 @@ const useDatabase = () => {
     };
 };
 
-export const db = useDatabase();
+export const adminDb = useDatabase();

@@ -1,11 +1,11 @@
-import { generateClient } from 'aws-amplify/data';
+import type { generateClient } from 'aws-amplify/data';
 import { ref } from 'vue';
 import { type Schema } from 'clientRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import type { ShallowReactive } from 'vue';
 import Bugsnag from '@bugsnag/js';
 
-const client = generateClient<Schema>({ authMode: 'userPool' });
+let client: ReturnType<typeof generateClient<Schema>>;
 type Keys = keyof Schema['ProjectFleet']['type'];
 
 export type ProjectFleet = Readonly<Schema['ProjectFleet']['type']>;
@@ -93,8 +93,10 @@ let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
 let deletedSub: Subscription | null = null;
 const startSubscriptions = (
+    connection: ReturnType<typeof generateClient<Schema>>,
     map: ShallowReactive<Map<string, ProjectFleet>>,
 ) => {
+    client = connection;
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
     createdSub = client.models.ProjectFleet.onCreate({
         selectionSet,

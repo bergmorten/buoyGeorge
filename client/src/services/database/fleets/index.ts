@@ -1,11 +1,11 @@
-import { generateClient } from 'aws-amplify/data';
+import type { generateClient } from 'aws-amplify/data';
 import { ref } from 'vue';
 import { type Schema } from 'clientRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import type { ShallowReactive } from 'vue';
 import Bugsnag from '@bugsnag/js';
 
-const client = generateClient<Schema>({ authMode: 'userPool' });
+let client: ReturnType<typeof generateClient<Schema>>;
 type Keys = keyof Schema['Fleet']['type']; // Cause linter 100% CPU
 export type Fleet = Readonly<Schema['Fleet']['type']>;
 export type NewFleet = Schema['Fleet']['createType'];
@@ -116,7 +116,11 @@ const archive = async (id: string, archive: boolean) => {
 let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
 let deletedSub: Subscription | null = null;
-const startSubscriptions = (map: ShallowReactive<Map<string, Fleet>>) => {
+const startSubscriptions = (
+    connection: ReturnType<typeof generateClient<Schema>>,
+    map: ShallowReactive<Map<string, Fleet>>,
+) => {
+    client = connection;
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
     createdSub = client.models.Fleet.onCreate({ selectionSet }).subscribe({
         next: (data) => map.set(data.id, data as Fleet),

@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import type { QTableProps } from 'quasar';
 import { useQuasar, openURL } from 'quasar';
-import { db } from 'admin/services/database';
+import { adminDb } from 'admin/services/database';
 import type { Client } from 'admin/services/database/client';
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
@@ -145,10 +145,10 @@ const pagination = {
     rowsPerPage: 10,
 };
 
-const isLoading = db.client.isLoading;
+const isLoading = adminDb.client.isLoading;
 
 const activeClients = () => {
-    const allRows = Array.from(db.clients.values());
+    const allRows = Array.from(adminDb.clients.values());
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();
@@ -161,7 +161,7 @@ const activeClients = () => {
 };
 const updateArchivedClients = async () => {
     try {
-        archivedClients.value = await db.client.getAll(true);
+        archivedClients.value = await adminDb.client.getAll(true);
     } catch (e) {
         logger.error($q, 'Error fetching archived clients', e);
     }

@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { Project } from 'client/services/database/projects';
 import type { Fleet } from 'client/services/database/fleets';
 import {
@@ -98,13 +98,13 @@ const columns: QTableProps['columns'] = [
 ];
 
 const projectFleets = computed(() => {
-    return Array.from(db.projectFleets.values()).filter(
+    return Array.from(clientDb.projectFleets.values()).filter(
         (el) => el.projectId === props.project.id,
     );
 });
 
 const fleets = computed(() => {
-    return Array.from(db.fleets.values());
+    return Array.from(clientDb.fleets.values());
 });
 
 const selected = computed(() => {
@@ -126,7 +126,7 @@ const updateProjectFleets = async (selection: {
     if (selection.added) {
         for (const fleet of selection.rows) {
             try {
-                await db.projectFleet.add({
+                await clientDb.projectFleet.add({
                     fleetId: fleet.id,
                     projectId: project.id,
                 });
@@ -140,7 +140,8 @@ const updateProjectFleets = async (selection: {
                 const projectFleet = projectFleets.value.find(
                     (el) => el.fleetId === fleet.id,
                 );
-                if (projectFleet) await db.projectFleet.remove(projectFleet.id);
+                if (projectFleet)
+                    await clientDb.projectFleet.remove(projectFleet.id);
             } catch (err) {
                 logger.error($q, 'Could not remove project from fleet', err);
             }

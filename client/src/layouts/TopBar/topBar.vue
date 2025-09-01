@@ -54,7 +54,7 @@ import { useQuasar } from 'quasar';
 //import AlertCenter from '@/components/AlertCenter/alertCenter.vue';
 import StatusRadio from 'cmn/components/Status/StatusRadio.vue';
 import { storeToRefs } from 'pinia';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import { useHelpStore } from 'cmn/stores/help';
 const helpStore = useHelpStore();
 //import ControlBar from '../ControlBar/controlBar.vue';
@@ -67,7 +67,7 @@ const { isPage } = storeToRefs(helpStore);
 const { helpOpen } = storeToRefs(drawerStore);
 //const isElectron = $q.platform.is.electron ? true : false;
 
-const { isConnected } = db;
+const { isConnected } = clientDb;
 //const { minimize, toggle: toggleWindow, close: windowClose } = useElectron();
 
 // const { highestAlertValue: alertLevel } = useAlerts();

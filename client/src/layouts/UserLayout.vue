@@ -460,7 +460,7 @@ import { useGeoLocationStore } from 'cmn/stores/goeLocation';
 import TopBar from './TopBar/topBar.vue';
 import packageJson from 'clientRoot/package.json';
 import { storeToRefs } from 'pinia';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 
 const $q = useQuasar();
 const drawerStore = useDrawerStore();
@@ -585,7 +585,7 @@ onMounted(async () => {
     }
 
     try {
-        await db.start();
+        await clientDb.start();
     } catch (error) {
         console.error('Failed to start database connection:', error);
         $q.notify({
@@ -598,7 +598,7 @@ onMounted(async () => {
 onUnmounted(() => {
     console.debug('UserLayout unmounted');
     try {
-        db.stop();
+        clientDb.stop();
     } catch (error) {
         console.error('Failed to stop database connection:', error);
         $q.notify({

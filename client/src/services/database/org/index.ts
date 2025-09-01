@@ -1,10 +1,10 @@
-import { generateClient } from 'aws-amplify/data';
+import type { generateClient } from 'aws-amplify/data';
 import { ref } from 'vue';
 import { type Schema } from 'clientRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import Bugsnag from '@bugsnag/js';
 
-const client = generateClient<Schema>({ authMode: 'userPool' });
+let client: ReturnType<typeof generateClient<Schema>>;
 export type Org = Schema['Org']['type'];
 export type NewOrg = Schema['Org']['createType'];
 export type UpdateOrg = Schema['Org']['updateType'];
@@ -75,7 +75,10 @@ const update = async (updateOrg: UpdateOrg) => {
 
 let updatedSub: Subscription | null = null;
 
-const startSubscriptions = () => {
+const startSubscriptions = (
+    connection: ReturnType<typeof generateClient<Schema>>,
+) => {
+    client = connection;
     if (updatedSub) stopSubscriptions();
 
     updatedSub = client.models.Org.onUpdate().subscribe({

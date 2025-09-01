@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import type { QTableProps } from 'quasar';
 import { useQuasar } from 'quasar';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { User } from 'client/services/database/users';
 import type { Ref } from 'vue';
 import {
@@ -144,10 +144,10 @@ const pagination = {
     rowsPerPage: 10,
 };
 
-const userIsLoading = db.user.isLoading;
+const userIsLoading = clientDb.user.isLoading;
 
 const showActiveUser = () => {
-    const allRows = Array.from(db.users.values());
+    const allRows = Array.from(clientDb.users.values());
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();
@@ -160,7 +160,7 @@ const showActiveUser = () => {
 };
 const updateArchivedUsers = async () => {
     try {
-        const allRows = await db.user.getAll(true);
+        const allRows = await clientDb.user.getAll(true);
 
         if (filter.value) {
             const searchValue = filter.value.toLowerCase();

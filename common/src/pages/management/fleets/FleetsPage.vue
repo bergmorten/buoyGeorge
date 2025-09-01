@@ -80,7 +80,7 @@ import type { QTableProps } from 'quasar';
 import { useQuasar } from 'quasar';
 import { computed, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { Fleet } from 'client/services/database/fleets';
 import EditFleetProjectsDialog from 'cmn/dialogs/Management/fleetProjects/EditFleetProjects.vue';
 import EditFleetUsersDialog from 'cmn/dialogs/Management/fleetUsers/EditFleetUsers.vue';
@@ -93,7 +93,7 @@ const helpStore = useHelpStore();
 const $q = useQuasar();
 const filter = ref('');
 
-const fleetIsLoading = db.fleet.isLoading;
+const fleetIsLoading = clientDb.fleet.isLoading;
 
 const fleetColumns: QTableProps['columns'] = [
     {
@@ -135,7 +135,7 @@ const pagination = {
 };
 
 const fleetRows = computed(() => {
-    const allRows = Array.from(db.fleets.values());
+    const allRows = Array.from(clientDb.fleets.values());
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();

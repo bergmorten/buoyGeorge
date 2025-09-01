@@ -35,6 +35,15 @@ const routes: RouteRecordRaw[] = [
                 },
             },
             {
+                path: 'meta',
+                name: 'client_meta',
+                component: () => import('admin/pages/clients/OrgMeta.vue'),
+                meta: {
+                    menuSection: 'AdminClients',
+                    requiresAuth: true,
+                },
+            },
+            {
                 path: '',
                 name: 'blank_page',
                 component: () => import('admin/pages/BlankPage.vue'),

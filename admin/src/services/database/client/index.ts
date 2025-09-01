@@ -1,11 +1,11 @@
-import { generateClient } from 'aws-amplify/data';
 import { ref } from 'vue';
 import { type Schema } from 'adminRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import type { ShallowReactive } from 'vue';
 import Bugsnag from '@bugsnag/js';
+import type { generateClient } from 'aws-amplify/data';
+let admin: ReturnType<typeof generateClient<Schema>>;
 
-const client = generateClient<Schema>({ authMode: 'userPool' });
 type Keys = keyof Schema['Client']['type'] | 'modems.*';
 export type Client = Omit<Readonly<Schema['Client']['type']>, 'modems'>;
 
@@ -47,8 +47,9 @@ const isLoading = ref(false);
 const getAll = async (
     includeArchived = false,
 
-    options?: Parameters<typeof client.models.Client.list>[0],
+    options?: Parameters<typeof admin.models.Client.list>[0],
 ) => {
+    if (!admin) throw new Error('Database not initialized');
     let token: string | null = null;
     const users = [];
     isLoading.value = true;
@@ -59,13 +60,13 @@ const getAll = async (
                 errors,
                 nextToken,
             } = includeArchived
-                ? await client.models.Client.list({
+                ? await admin.models.Client.list({
                       ...options,
                       selectionSet,
                       limit: 100,
                       nextToken: token,
                   })
-                : await client.models.Client.clientByArchived(
+                : await admin.models.Client.clientByArchived(
                       { isArchived: 'false' },
                       {
                           selectionSet,
@@ -93,7 +94,7 @@ const getAll = async (
 };
 
 const add = async (newUser: NewClient) => {
-    const { errors, data: user } = await client.models.Client.create(newUser, {
+    const { errors, data: user } = await admin.models.Client.create(newUser, {
         selectionSet: selectionSet,
     });
     if (errors) {
@@ -104,7 +105,7 @@ const add = async (newUser: NewClient) => {
     return user;
 };
 const update = async (updateUser: UpdateClient) => {
-    const { errors, data: user } = await client.models.Client.update(
+    const { errors, data: user } = await admin.models.Client.update(
         updateUser,
         {
             selectionSet: selectionSet,
@@ -119,7 +120,7 @@ const update = async (updateUser: UpdateClient) => {
 };
 const archive = async (id: string, archive: boolean) => {
     // In case we must add additional logic to clean up invisible users
-    const { errors, data: user } = await client.models.Client.update(
+    const { errors, data: user } = await admin.models.Client.update(
         {
             id,
             isArchived: archive ? 'true' : 'false',
@@ -136,21 +137,25 @@ const archive = async (id: string, archive: boolean) => {
 let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
 let deletedSub: Subscription | null = null;
-const startSubscriptions = (map: ShallowReactive<Map<string, Client>>) => {
+const startSubscriptions = (
+    connection: ReturnType<typeof generateClient<Schema>>,
+    map: ShallowReactive<Map<string, Client>>,
+) => {
+    admin = connection;
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
-    createdSub = client.models.Client.onCreate({ selectionSet }).subscribe({
+    createdSub = admin.models.Client.onCreate({ selectionSet }).subscribe({
         next: (data) => {
             map.set(data.id, data as Client);
         },
         error: (error) => Bugsnag.notify(error),
     });
-    updatedSub = client.models.Client.onUpdate().subscribe({
+    updatedSub = admin.models.Client.onUpdate().subscribe({
         next: (data) => {
             map.set(data.id, data as Client);
         },
         error: (error) => Bugsnag.notify(error),
     });
-    deletedSub = client.models.Client.onDelete({
+    deletedSub = admin.models.Client.onDelete({
         selectionSet: ['id'],
     }).subscribe({
         next: (data) => {

@@ -33,24 +33,7 @@
                     <q-space />
                     <n-btn active label="New producer" @click="newProducer" />
                 </template>
-                <template #body-cell-orgAdmin="props">
-                    <q-td :props="props">
-                        <div>
-                            <q-icon :name="props.row.orgAdmin ? 'check' : ''" />
-                        </div>
-                    </q-td>
-                </template>
-                <template #body-cell-fleets="props">
-                    <q-td :props="props">
-                        <div>
-                            <n-btn
-                                dense
-                                icon="groups"
-                                @click.stop="editFleets(props.row)"
-                            />
-                        </div>
-                    </q-td>
-                </template>
+
                 <template #bottom-row>
                     <div class="table-buttons row">
                         <q-checkbox
@@ -75,7 +58,7 @@
 <script setup lang="ts">
 import type { QTableProps } from 'quasar';
 import { useQuasar } from 'quasar';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { Producer } from 'client/services/database/producers';
 import type { Ref } from 'vue';
 import {
@@ -87,7 +70,6 @@ import {
     getCurrentInstance,
 } from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
-import EditProducerFleetsDialog from 'cmn/dialogs/Management/producerFleets/EditProducerFleets.vue';
 import ProducerManagement from 'cmn/dialogs/Management/producer/ProducerManagement.vue';
 import { logger } from 'cmn/lib/logger';
 import ProducersHelp from './ProducerHelp.vue';
@@ -109,32 +91,11 @@ const producerColumns: QTableProps['columns'] = [
         align: 'left',
     },
     {
-        name: 'email',
-        label: 'Email',
-        field: 'email',
+        name: 'fleet',
+        label: 'Fleet',
+        field: 'fleet',
         sortable: true,
         align: 'left',
-    },
-    {
-        name: 'phone',
-        label: 'Phone',
-        field: 'phone',
-        sortable: true,
-        align: 'left',
-    },
-    {
-        name: 'orgAdmin',
-        label: 'Admin',
-        field: 'orgAdmin',
-        sortable: true,
-        align: 'center',
-    },
-    {
-        name: 'fleets',
-        label: 'Fleets',
-        field: 'id',
-        sortable: false,
-        align: 'center',
     },
 ];
 const pagination = {
@@ -144,40 +105,41 @@ const pagination = {
     rowsPerPage: 10,
 };
 
-const producerIsLoading = db.producer.isLoading;
+const producerIsLoading = clientDb.producer.isLoading;
 
 const showActiveProducer = () => {
-    const allRows = Array.from(db.producers.values());
+    const allRows = Array.from(clientDb.producers.values());
 
-    if (filter.value) {
-        const searchValue = filter.value.toLowerCase();
-        return allRows
-            .filter((el) => el.fullName.toLowerCase().includes(searchValue))
-            .sort((a, b) => b.fullName.localeCompare(a.fullName));
-    } else {
-        return allRows;
-    }
+    return allRows;
 };
 const updateArchivedProducers = async () => {
     try {
-        const allRows = await db.producer.getAll(true);
+        const allRows = await clientDb.producer.getAll(true);
 
-        if (filter.value) {
-            const searchValue = filter.value.toLowerCase();
-            archivedProducers.value = allRows
-                .filter((el) => el.fullName.toLowerCase().includes(searchValue))
-                .sort((a, b) => b.fullName.localeCompare(a.fullName));
-        } else {
-            archivedProducers.value = allRows;
-        }
+        return allRows;
     } catch (e) {
         logger.error($q, 'Error fetching archived producers', e);
     }
 };
 
 const producerRows = computed(() => {
-    if (showArchived.value) return archivedProducers.value;
-    return showActiveProducer();
+    let rows: (Producer & { fleet?: string })[] = [];
+    if (showArchived.value) rows = archivedProducers.value;
+    else rows = showActiveProducer();
+
+    if (filter.value) {
+        const searchValue = filter.value.toLowerCase();
+        rows = rows
+            .filter((el) => el.name.toLowerCase().includes(searchValue))
+            .sort((a, b) => b.name.localeCompare(a.name));
+    }
+    rows.map((r) => {
+        const fleet = r.fleetId ? clientDb.fleets.get(r.fleetId) : undefined;
+        if (fleet) r.fleet = fleet.name;
+        else r.fleet = 'Not set';
+    });
+
+    return rows;
 });
 
 const viewProducer = (evt: Event, row: Producer) => {
@@ -199,13 +161,6 @@ const newProducer = () => {
         if (showArchived.value) {
             await updateArchivedProducers();
         }
-    });
-};
-
-const editFleets = (producer: Producer) => {
-    $q.dialog({
-        component: EditProducerFleetsDialog,
-        componentProps: { producer },
     });
 };
 

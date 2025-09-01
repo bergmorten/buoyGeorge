@@ -277,11 +277,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import {
+    computed,
+    reactive,
+    ref,
+    watch,
+    onMounted,
+    getCurrentInstance,
+    onUnmounted,
+} from 'vue';
 import type { QForm } from 'quasar';
 import { useDialogPluginComponent, useQuasar, copyToClipboard } from 'quasar';
 import { logger } from 'cmn/lib/logger';
-import { db } from 'admin/services/database';
+import { adminDb } from 'admin/services/database';
 import type { Client, UpdateClient } from 'admin/services/database/client';
 import { wait } from 'cmn/lib/tools';
 import {
@@ -290,7 +298,9 @@ import {
     version2String,
 } from 'cmn/lib/version';
 import { isUrlValid } from 'cmn/lib/validation';
-
+import ClientHelp from './ClientHelp.vue';
+import { useHelpStore } from 'cmn/stores/help';
+const helpStore = useHelpStore();
 const props = defineProps<{
     client: Client;
     latestVersion: ClientVersion;
@@ -323,7 +333,7 @@ const isEditing = props.client !== undefined;
 
 const resetClient = () => {
     if (props.client) {
-        const fullClient = db.clients.get(props.client.id);
+        const fullClient = adminDb.clients.get(props.client.id);
 
         state.name = fullClient?.name ?? '';
         state.url = fullClient?.url ?? null;
@@ -436,7 +446,7 @@ const updateClient = async () => {
             tcpBanned: state.tcpBanned,
         };
 
-        await db.client.update(updatedClient);
+        await adminDb.client.update(updatedClient);
         onDialogOK();
     } catch (error: unknown) {
         printErrorMessage(error, 'Could not update client');
@@ -540,7 +550,7 @@ const archiveClient = () => {
             working.value = true;
             try {
                 if (!props.client) return;
-                await db.client.archive(props.client.id, true);
+                await adminDb.client.archive(props.client.id, true);
                 logger.log($q, 'Client archived');
                 onDialogOK();
             } catch (error: unknown) {
@@ -580,7 +590,7 @@ const unArchiveClient = () => {
             working.value = true;
             try {
                 if (!props.client) return;
-                await db.client.archive(props.client.id, false);
+                await adminDb.client.archive(props.client.id, false);
                 logger.log($q, 'Client archived');
                 onDialogOK();
             } catch (error: unknown) {
@@ -612,16 +622,34 @@ const canUpgrade = computed(() => {
     return false;
 });
 
-if (isEditing) {
-    resetClient();
-}
-
 watch(state, async () => {
     try {
         formValid.value = await verifyForm(state);
     } catch {
         formValid.value = false;
     }
+});
+onMounted(() => {
+    try {
+        if (isEditing) {
+            resetClient();
+        }
+
+        const myName = getCurrentInstance()?.type.__name;
+
+        if (myName)
+            helpStore.addHelp({
+                name: myName,
+                type: 'dialog',
+                helpPage: ClientHelp,
+            });
+    } catch (e) {
+        logger.error($q, 'Error occurred while mounting ClientManagement:', e);
+    }
+});
+onUnmounted(() => {
+    const myName = getCurrentInstance()?.type.__name;
+    if (myName) helpStore.removeHelp(myName);
 });
 </script>
 

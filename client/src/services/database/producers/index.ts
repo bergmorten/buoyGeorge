@@ -1,17 +1,34 @@
-import { generateClient } from 'aws-amplify/data';
+import type { generateClient } from 'aws-amplify/data';
 import { ref } from 'vue';
 import { type Schema } from 'clientRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import type { ShallowReactive } from 'vue';
 import Bugsnag from '@bugsnag/js';
 
-const client = generateClient<Schema>({ authMode: 'userPool' });
+let client: ReturnType<typeof generateClient<Schema>>;
 //type Keys = keyof Schema['Producer']['type'];
 type Keys = keyof Schema['Producer']['type'] | 'location.*';
-export type Producer = Omit<
-    Readonly<Schema['Producer']['type']>,
-    'manifest' | 'status'
+
+export const enum ProducerType {
+    GEORGE = 'GEORGE',
+    ZEPHYR = 'ZEPHYR',
+    ALIZE = 'ALIZE',
+}
+
+export const producerTypes: ReadonlyArray<ProducerType> = [
+    ProducerType.GEORGE,
+    ProducerType.ZEPHYR,
+    ProducerType.ALIZE,
+] as const;
+
+export type Producer = Readonly<
+    Omit<Schema['Producer']['type'], 'manifest' | 'type'> & {
+        type: ProducerType;
+    }
 >;
+
+export type ProducerStatus = Producer['state'];
+
 export interface FullProducer extends Producer {
     readonly status: string | null;
     readonly manifest: string | null;
@@ -28,14 +45,13 @@ const selectionSet = [
     'lastSeen',
     'location.*',
     'state',
+    'status',
+    'fleetId',
+    'type',
     'createdAt',
     'updatedAt',
 ] as const satisfies Keys[];
-const fullSet = [
-    ...selectionSet,
-    'manifest',
-    'status',
-] as const satisfies Keys[];
+const fullSet = [...selectionSet, 'manifest'] as const satisfies Keys[];
 
 // type Options = Parameters<typeof client.models.Producer.list>[0];
 const isLoading = ref(false);
@@ -150,7 +166,11 @@ const archive = async (id: string, archive: boolean) => {
 let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
 let deletedSub: Subscription | null = null;
-const startSubscriptions = (map: ShallowReactive<Map<string, Producer>>) => {
+const startSubscriptions = (
+    connection: ReturnType<typeof generateClient<Schema>>,
+    map: ShallowReactive<Map<string, Producer>>,
+) => {
+    client = connection;
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
     createdSub = client.models.Producer.onCreate({ selectionSet }).subscribe({
         next: (data) => map.set(data.id, data as Producer),

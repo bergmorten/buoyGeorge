@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type {
     Project,
     NewProject,
@@ -205,7 +205,7 @@ const createProject = async () => {
             name: state.name.trim(),
             description: state.description.trim(),
         };
-        await db.project.add(newProject);
+        await clientDb.project.add(newProject);
 
         onDialogOK();
     } catch (error: unknown) {
@@ -229,7 +229,7 @@ const updateProject = async () => {
             description: state.description.trim(),
         };
 
-        await db.project.update(updatedProject);
+        await clientDb.project.update(updatedProject);
         onDialogOK();
     } catch (error: unknown) {
         printErrorMessage(error, 'Could not update project');
@@ -267,7 +267,7 @@ const archiveProject = () => {
             working.value = true;
             try {
                 if (!props.project) return;
-                await db.project.archive(props.project.id, true);
+                await clientDb.project.archive(props.project.id, true);
                 logger.log($q, 'Project archived');
                 onDialogOK();
             } catch (error: unknown) {
@@ -308,7 +308,7 @@ const unArchiveProject = () => {
             working.value = true;
             try {
                 if (!props.project) return;
-                await db.project.archive(props.project.id, false);
+                await clientDb.project.archive(props.project.id, false);
                 logger.log($q, 'Project restored');
                 onDialogOK();
             } catch (error: unknown) {
@@ -319,10 +319,6 @@ const unArchiveProject = () => {
         });
 };
 
-if (isEditing) {
-    resetProject();
-}
-
 watch(state, async () => {
     try {
         formValid.value = await verifyForm(state);
@@ -332,14 +328,22 @@ watch(state, async () => {
 });
 
 onMounted(() => {
-    const myName = getCurrentInstance()?.type.__name;
+    try {
+        if (isEditing) {
+            resetProject();
+        }
 
-    if (myName)
-        helpStore.addHelp({
-            name: myName,
-            type: 'dialog',
-            helpPage: ProjectHelp,
-        });
+        const myName = getCurrentInstance()?.type.__name;
+
+        if (myName)
+            helpStore.addHelp({
+                name: myName,
+                type: 'dialog',
+                helpPage: ProjectHelp,
+            });
+    } catch (e) {
+        logger.error($q, 'Error occurred while mounting ProjectManagement:', e);
+    }
 });
 onUnmounted(() => {
     const myName = getCurrentInstance()?.type.__name;

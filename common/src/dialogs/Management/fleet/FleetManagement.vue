@@ -110,7 +110,7 @@ import {
 import type { QForm } from 'quasar';
 import { useDialogPluginComponent, useQuasar } from 'quasar';
 import { logger } from 'cmn/lib/logger';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type {
     Fleet,
     NewFleet,
@@ -205,7 +205,7 @@ const createFleet = async () => {
             name: state.name,
             description: state.description,
         };
-        const fleet = await db.fleet.add(newFleet);
+        const fleet = await clientDb.fleet.add(newFleet);
         if (!fleet) throw new Error('Could not create fleet');
         onDialogOK();
     } catch (error: unknown) {
@@ -230,7 +230,7 @@ const updateFleet = async () => {
             description: state.description.trim(),
         };
 
-        await db.fleet.update(updatedFleet);
+        await clientDb.fleet.update(updatedFleet);
         onDialogOK();
     } catch (error: unknown) {
         printErrorMessage(error, 'Could not update fleet');
@@ -273,7 +273,7 @@ const archiveFleet = () => {
             working.value = true;
             try {
                 if (!props.fleet) return;
-                await db.fleet.archive(props.fleet.id, true);
+                await clientDb.fleet.archive(props.fleet.id, true);
 
                 logger.log($q, 'Fleet archived');
                 onDialogOK();
@@ -315,7 +315,7 @@ const unArchiveFleet = () => {
             working.value = true;
             try {
                 if (!props.fleet) return;
-                await db.fleet.archive(props.fleet.id, false);
+                await clientDb.fleet.archive(props.fleet.id, false);
                 logger.log($q, 'Fleet restored');
                 onDialogOK();
             } catch (error: unknown) {
@@ -326,10 +326,6 @@ const unArchiveFleet = () => {
         });
 };
 
-if (isEditing) {
-    resetFleet();
-}
-
 watch(state, async () => {
     try {
         formValid.value = await verifyForm(state);
@@ -339,14 +335,20 @@ watch(state, async () => {
 });
 
 onMounted(() => {
-    const myName = getCurrentInstance()?.type.__name;
+    try {
+        if (isEditing) resetFleet();
 
-    if (myName)
-        helpStore.addHelp({
-            name: myName,
-            type: 'dialog',
-            helpPage: FleetHelp,
-        });
+        const myName = getCurrentInstance()?.type.__name;
+
+        if (myName)
+            helpStore.addHelp({
+                name: myName,
+                type: 'dialog',
+                helpPage: FleetHelp,
+            });
+    } catch (e) {
+        logger.error($q, 'Error occurred while mounting FleetManagement:', e);
+    }
 });
 onUnmounted(() => {
     const myName = getCurrentInstance()?.type.__name;

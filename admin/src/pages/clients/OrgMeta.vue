@@ -242,7 +242,7 @@ import { isEqual } from 'lodash';
 import { logger } from 'cmn/lib/logger';
 import { useQuasar } from 'quasar';
 import type { QForm } from 'quasar';
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { Org, NewOrg, UpdateOrg } from 'client/services/database/org';
 import type { User } from 'client/services/database/users';
 import {
@@ -314,7 +314,9 @@ const resetOrg = () => {
     state.state = currentContactInfo.state ?? '';
     state.zip = currentContactInfo.zip ?? '';
     if (currentOrg.value.primaryContactId) {
-        primaryContact.value = db.users.get(currentOrg.value.primaryContactId);
+        primaryContact.value = clientDb.users.get(
+            currentOrg.value.primaryContactId,
+        );
     }
 
     if (currentContactInfo && currentContactInfo.country) {
@@ -329,7 +331,7 @@ const resetOrg = () => {
 };
 
 const orgAdmins = computed(() => {
-    const data = db.users.values();
+    const data = clientDb.users.values();
     if (!data) return [];
     return Array.from(data.filter((el) => el.orgAdmin));
 });
@@ -378,7 +380,7 @@ const updateOrg = async () => {
                 primaryContactId: admin ? admin.id : null,
             };
 
-            currentOrg.value = await db.org.update(updateOrg);
+            currentOrg.value = await clientDb.org.update(updateOrg);
             resetOrg();
         } else {
             const newOrg: NewOrg = {
@@ -388,7 +390,7 @@ const updateOrg = async () => {
                 primaryContactId: admin ? admin.id : null,
             };
 
-            currentOrg.value = await db.org.add(newOrg);
+            currentOrg.value = await clientDb.org.add(newOrg);
         }
     } catch (err) {
         logger.error($q, 'Could not save org', err);

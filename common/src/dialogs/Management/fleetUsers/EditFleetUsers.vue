@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { db } from 'client/services/database';
+import { clientDb } from 'client/services/database';
 import type { User } from 'client/services/database/users';
 import type { Fleet } from 'client/services/database/fleets';
 import {
@@ -117,13 +117,13 @@ const columns: QTableProps['columns'] = [
 ];
 
 const fleetUsers = computed(() => {
-    return Array.from(db.userFleets.values()).filter(
+    return Array.from(clientDb.userFleets.values()).filter(
         (el) => el.fleetId === props.fleet.id,
     );
 });
 
 const users = computed(() => {
-    return Array.from(db.users.values());
+    return Array.from(clientDb.users.values());
 });
 const selected = computed(() => {
     return Array.from(users.value).filter((el) =>
@@ -144,7 +144,7 @@ const updateFleetUsers = async (selection: {
     if (selection.added) {
         for (const user of selection.rows) {
             try {
-                await db.userFleet.add({
+                await clientDb.userFleet.add({
                     fleetId: fleet.id,
                     userId: user.id,
                 });
@@ -158,7 +158,7 @@ const updateFleetUsers = async (selection: {
                 const fleetUser = fleetUsers.value.find(
                     (el) => el.userId === user.id,
                 );
-                if (fleetUser) await db.userFleet.remove(fleetUser.id);
+                if (fleetUser) await clientDb.userFleet.remove(fleetUser.id);
             } catch (err) {
                 logger.error($q, 'Could not remove user from fleet', err);
             }

@@ -203,7 +203,8 @@ import { useRouterStore } from 'cmn/stores/route';
 import TopBar from './TopBar/topBar.vue';
 import packageJson from 'adminRoot/package.json';
 import { storeToRefs } from 'pinia';
-import { db } from 'admin/services/database';
+import { adminDb } from 'admin/services/database';
+import { clientDb } from 'client/services/database';
 import type { Client } from 'admin/services/database/client';
 import awsOriginalConfig from 'adminRoot/amplify_outputs.json';
 import { logger } from 'cmn/lib/logger';
@@ -227,7 +228,7 @@ const version = packageJson.version;
 type AwsConfig = typeof awsOriginalConfig;
 const client = shallowRef<Client | null>(null);
 const adminMode = ref(true);
-const isLoading = db.client.isLoading;
+const isLoading = adminDb.client.isLoading;
 const activeClient = ref<Client | null>(null);
 const menuSection = computed(() => {
     return routerStore.routerMeta.menuSection;
@@ -261,7 +262,7 @@ const userSignOut = async () => {
 };
 
 const clients = computed(() => {
-    return Array.from(db.clients.values());
+    return Array.from(adminDb.clients.values());
 });
 
 const switchClient = async (
@@ -290,7 +291,6 @@ const switchClient = async (
 
     try {
         let config: AwsConfig | undefined = undefined;
-
         let useSRP_AUTH = true;
 
         if (newClient) {
@@ -351,19 +351,22 @@ const switchClient = async (
         if (newClient) {
             adminMode.value = false;
             activeClient.value = newClient;
-            db.stop();
+            adminDb.stop();
+            await clientDb.start();
             if (router.currentRoute.value.name !== 'meta') {
                 await router.push({ name: 'client_meta' });
             } else router.go(0); // reload current page
         } else {
             adminMode.value = true;
             activeClient.value = null;
-            await db.start();
+            clientDb.stop();
+            await adminDb.start();
             await router.push({ name: 'admin_clients' });
         }
     } catch (error) {
         logger.warn($q, 'Could not sign in to this client', error);
         Amplify.configure(awsOriginalConfig);
+        await signOut();
         await router.push({ name: 'guest' });
     } finally {
         $q.loading.hide();
@@ -402,7 +405,7 @@ onMounted(async () => {
     }
 
     try {
-        await db.start();
+        await adminDb.start();
     } catch (error) {
         console.error('Failed to start database connection:', error);
         $q.notify({
@@ -415,7 +418,8 @@ onMounted(async () => {
 onUnmounted(() => {
     console.debug('AdminLayout unmounted');
     try {
-        db.stop();
+        adminDb.stop();
+        clientDb.stop();
     } catch (error) {
         console.error('Failed to stop database connection:', error);
         $q.notify({
