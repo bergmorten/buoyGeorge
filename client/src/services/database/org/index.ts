@@ -1,5 +1,5 @@
 import type { generateClient } from 'aws-amplify/data';
-import { ref } from 'vue';
+import { ref, readonly } from 'vue';
 import { type Schema } from 'clientRoot/amplify/data/resource';
 import type { Subscription } from 'rxjs';
 import Bugsnag from '@bugsnag/js';
@@ -10,7 +10,7 @@ export type NewOrg = Schema['Org']['createType'];
 export type UpdateOrg = Schema['Org']['updateType'];
 // type Options = Parameters<typeof client.models.Producer.list>[0];
 const isLoading = ref(false);
-export const organization = ref<Org | null>(null);
+export const organization = ref<Readonly<Org> | null>(null);
 const get = async (options?: Parameters<typeof client.models.Org.list>[0]) => {
     let token: string | null = null;
     const orgs = [];
@@ -35,11 +35,8 @@ const get = async (options?: Parameters<typeof client.models.Org.list>[0]) => {
             token = nextToken as string | null;
             orgs.push(...orgBatch);
         } while (token);
-        if (orgs.length === 0) {
-            throw new Error('No orgs found');
-        }
-
-        organization.value = orgs[0] as Org;
+        const first = orgs[0];
+        organization.value = first ? (readonly(first) as Org) : null;
         if (orgs.length > 1) {
             Bugsnag.notify(
                 new Error(
@@ -84,7 +81,7 @@ const startSubscriptions = (
     updatedSub = client.models.Org.onUpdate().subscribe({
         next: (data) => {
             if (data.id === organization.value?.id) {
-                organization.value = data;
+                organization.value = readonly(data);
             }
         },
         error: (error) => Bugsnag.notify(error),

@@ -69,7 +69,14 @@ const useDatabase = () => {
             allProducers.forEach((p) => producers.set(p.id, p));
             const allProjects = await project.getAll(false);
             allProjects.forEach((p) => projects.set(p.id, p));
-            await org.get();
+            const organization = await org.get();
+            if (!organization) {
+                console.warn('No organization found');
+                Notify.create({
+                    type: 'negative',
+                    message: 'No organization found',
+                });
+            }
         } catch (error) {
             console.error('Error syncing database', error);
             Notify.create({

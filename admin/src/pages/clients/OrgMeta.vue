@@ -7,12 +7,6 @@
             <q-card-section class="text-bold text-h6 text-center">
                 Org: {{ state.name }}
             </q-card-section>
-            <q-card-section
-                v-if="multipleOrgDetected"
-                class="text-bold text-negative"
-            >
-                Error detected in database: Multiple org detected
-            </q-card-section>
 
             <q-card-section class="q-mt-none">
                 <q-form ref="metaForm">
@@ -106,13 +100,14 @@
                                 :rules="[(val) => !!val || 'Field is required']"
                             />
                         </div>
-                        <div class="col-4 column">
+                        <div class="col-4 column disabled">
                             <div class="text-h6 text-center">Billing</div>
                             <q-checkbox
                                 v-model="billingData.sendQuickBooksInvoice"
                                 dense
                                 outlined
                                 label="Use Quickbooks invoice"
+                                disable
                             />
                             <q-input
                                 v-model.number="
@@ -144,6 +139,7 @@
                                         val !== undefined ||
                                         'Field is required',
                                 ]"
+                                disable
                             />
                             <q-input
                                 v-model.number="
@@ -159,6 +155,7 @@
                                         val !== undefined ||
                                         'Field is required',
                                 ]"
+                                disable
                             />
                             <q-input
                                 v-model.number="billingData.supportHourPrice"
@@ -172,6 +169,7 @@
                                         val !== undefined ||
                                         'Field is required',
                                 ]"
+                                disable
                             />
                             <q-checkbox
                                 v-model="billingData.extendedSupport"
@@ -198,6 +196,7 @@
                                         val !== undefined ||
                                         'Field is required',
                                 ]"
+                                disable
                             />
                         </div>
                     </div>
@@ -222,7 +221,7 @@
                 />
                 <q-btn
                     v-if="hasChanged"
-                    label="Update"
+                    :label="currentOrg ? 'Update' : 'Create'"
                     color="primary"
                     :disable="working"
                     :loading="working"
@@ -234,7 +233,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, toRaw } from 'vue';
+import {
+    computed,
+    reactive,
+    ref,
+    toRaw,
+    onMounted,
+    onUnmounted,
+    getCurrentInstance,
+} from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
 import { getCodeList, getName } from 'country-list';
 import { isAWSPhone, isUrlValid } from 'cmn/lib/validation';
@@ -243,17 +250,19 @@ import { logger } from 'cmn/lib/logger';
 import { useQuasar } from 'quasar';
 import type { QForm } from 'quasar';
 import { clientDb } from 'client/services/database';
-import type { Org, NewOrg, UpdateOrg } from 'client/services/database/org';
+import type { NewOrg, UpdateOrg } from 'client/services/database/org';
 import type { User } from 'client/services/database/users';
 import {
     DefaultBillingData,
     type OrgBillingData,
     type ORG_CONTACT_INFO,
 } from 'client/services/database/org/models';
+import OrgHelp from './OrgHelp.vue';
+import { useHelpStore } from 'cmn/stores/help';
+const helpStore = useHelpStore();
 
 const $q = useQuasar();
 
-const multipleOrgDetected = ref(false);
 const showHelp = ref(false);
 const working = ref(false);
 const metaForm = ref<QForm | null>(null);
@@ -272,7 +281,7 @@ const state = reactive({
 const country = ref<undefined | { value: string; label: string }>(undefined);
 const primaryContact = ref<User | undefined>(undefined);
 
-const currentOrg = ref<Org | undefined>(undefined);
+const currentOrg = clientDb.organization;
 let currentContactInfo: ORG_CONTACT_INFO | undefined;
 let currentBillingInfo: OrgBillingData | undefined;
 const resetOrg = () => {
@@ -331,8 +340,8 @@ const resetOrg = () => {
 };
 
 const orgAdmins = computed(() => {
-    const data = clientDb.users.values();
-    if (!data) return [];
+    const data = clientDb.usersArray.value;
+
     return Array.from(data.filter((el) => el.orgAdmin));
 });
 
@@ -380,7 +389,7 @@ const updateOrg = async () => {
                 primaryContactId: admin ? admin.id : null,
             };
 
-            currentOrg.value = await clientDb.org.update(updateOrg);
+            await clientDb.org.update(updateOrg);
             resetOrg();
         } else {
             const newOrg: NewOrg = {
@@ -390,10 +399,11 @@ const updateOrg = async () => {
                 primaryContactId: admin ? admin.id : null,
             };
 
-            currentOrg.value = await clientDb.org.add(newOrg);
+            await clientDb.org.add(newOrg);
+            resetOrg();
         }
     } catch (err) {
-        logger.error($q, 'Could not save org', err);
+        logger.error($q, 'Could not save org!', err);
     } finally {
         working.value = false;
     }
@@ -403,7 +413,10 @@ const hasChanged = computed(() => {
     if (!currentOrg.value) return true;
     if (currentOrg.value.name !== state.name) return true;
     if (currentOrg.value.url !== state.url) return true;
-    if (currentOrg.value.primaryContactId !== primaryContact.value?.id)
+    if (
+        (currentOrg.value.primaryContactId ?? null) !==
+        (primaryContact.value?.id ?? null)
+    )
         return true;
     if (currentContactInfo?.phone !== state.phone) return true;
     if (currentContactInfo?.address1 !== state.address1) return true;
@@ -415,6 +428,28 @@ const hasChanged = computed(() => {
 
     if (!isEqual(currentBillingInfo, billingData)) return true;
     return false;
+});
+
+onMounted(async () => {
+    try {
+        resetOrg();
+
+        const myName = getCurrentInstance()?.type.__name;
+
+        if (myName)
+            helpStore.addHelp({
+                name: myName,
+                type: 'page',
+                helpPage: OrgHelp,
+            });
+    } catch (err) {
+        logger.error($q, 'Could not load org data', err);
+    }
+});
+
+onUnmounted(() => {
+    const myName = getCurrentInstance()?.type.__name;
+    if (myName) helpStore.removeHelp(myName);
 });
 </script>
 

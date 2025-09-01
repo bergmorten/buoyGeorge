@@ -39,8 +39,45 @@ const routes: RouteRecordRaw[] = [
                 name: 'client_meta',
                 component: () => import('admin/pages/clients/OrgMeta.vue'),
                 meta: {
-                    menuSection: 'AdminClients',
+                    menuSection: 'Management',
+                    subSection: 'Meta',
                     requiresAuth: true,
+                },
+            },
+            {
+                path: 'management/users',
+                name: 'management_users',
+                component: () =>
+                    import('cmn/pages/management/users/UsersPage.vue'),
+                meta: {
+                    menuSection: 'Management',
+                    subSection: 'Users',
+                    requiresAuth: true,
+                    requiresOrgAdmin: true,
+                },
+            },
+            {
+                path: 'management/fleets',
+                name: 'management_fleets',
+                component: () =>
+                    import('cmn/pages/management/fleets/FleetsPage.vue'),
+                meta: {
+                    menuSection: 'Management',
+                    subSection: 'Fleets',
+                    requiresAuth: true,
+                    requiresOrgAdmin: true,
+                },
+            },
+            {
+                path: 'management/projects',
+                name: 'management_projects',
+                component: () =>
+                    import('cmn/pages/management/projects/ProjectsPage.vue'),
+                meta: {
+                    menuSection: 'Management',
+                    subSection: 'Projects',
+                    requiresAuth: true,
+                    requiresOrgAdmin: true,
                 },
             },
             {

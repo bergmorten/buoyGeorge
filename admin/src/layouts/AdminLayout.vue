@@ -76,7 +76,7 @@
                             v-ripple
                             clickable
                             class="subitem"
-                            :class="{ active: menuSection === 'ClientMeta' }"
+                            :class="{ active: subSection === 'Meta' }"
                             :to="{ name: 'client_meta' }"
                         >
                             <q-item-section avatar>
@@ -88,27 +88,31 @@
                             v-ripple
                             clickable
                             class="subitem"
-                            :class="{ active: menuSection === 'ClientUsers' }"
-                            :to="{ name: 'client_users' }"
+                            :to="{
+                                name: 'management_fleets',
+                            }"
+                            :class="{ active: subSection === 'Fleets' }"
                         >
                             <q-item-section avatar>
-                                <q-icon name="people" />
+                                <q-icon name="apps" />
                             </q-item-section>
-                            <q-item-section>Users</q-item-section>
+
+                            <q-item-section>Fleets</q-item-section>
                         </q-item>
 
                         <q-item
                             v-ripple
                             clickable
                             class="subitem"
-                            :class="{
-                                active: menuSection === 'ClientProducers',
+                            :to="{
+                                name: 'management_producers',
                             }"
-                            :to="{ name: 'client_producers' }"
+                            :class="{ active: subSection === 'Producers' }"
                         >
                             <q-item-section avatar>
                                 <q-icon name="factory" />
                             </q-item-section>
+
                             <q-item-section>Producers</q-item-section>
                         </q-item>
 
@@ -116,8 +120,41 @@
                             v-ripple
                             clickable
                             class="subitem"
-                            :class="{ active: menuSection === 'ClientBilling' }"
-                            :to="{ name: 'client_billing' }"
+                            :to="{
+                                name: 'management_users',
+                            }"
+                            :class="{ active: subSection === 'Users' }"
+                        >
+                            <q-item-section avatar>
+                                <q-icon name="people" />
+                            </q-item-section>
+
+                            <q-item-section>Users</q-item-section>
+                        </q-item>
+                        <q-item
+                            v-ripple
+                            clickable
+                            class="subitem"
+                            :to="{
+                                name: 'management_projects',
+                            }"
+                            :class="{ active: subSection === 'Projects' }"
+                        >
+                            <q-item-section avatar>
+                                <q-icon name="dashboard_customize" />
+                            </q-item-section>
+
+                            <q-item-section>Projects</q-item-section>
+                        </q-item>
+
+                        <q-item
+                            v-ripple
+                            clickable
+                            class="subitem"
+                            :to="{
+                                name: 'management_billing',
+                            }"
+                            :class="{ active: subSection === 'Billing' }"
                         >
                             <q-item-section avatar>
                                 <q-icon name="attach_money" />
@@ -230,8 +267,12 @@ const client = shallowRef<Client | null>(null);
 const adminMode = ref(true);
 const isLoading = adminDb.client.isLoading;
 const activeClient = ref<Client | null>(null);
+
 const menuSection = computed(() => {
     return routerStore.routerMeta.menuSection;
+});
+const subSection = computed(() => {
+    return routerStore.routerMeta.subSection;
 });
 
 const hideDrawer = (ev?: Event) => {
@@ -378,7 +419,7 @@ watch(client, async (newClient, oldClient) => {
     await switchClient(newClient, oldClient);
 });
 onMounted(async () => {
-    console.debug('AdminLayout mounted');
+    console.debug('AdminLayout mounted...');
 
     try {
         const mfa = await fetchMFAPreference();
@@ -405,18 +446,21 @@ onMounted(async () => {
     }
 
     try {
-        await adminDb.start();
+        if (adminMode.value) await adminDb.start();
     } catch (error) {
         console.error('Failed to start database connection:', error);
         $q.notify({
             type: 'negative',
             message: 'Failed to start database connection',
         });
+        await signOut();
+        await router.push({ name: 'guest' });
     }
 });
 
 onUnmounted(() => {
     console.debug('AdminLayout unmounted');
+
     try {
         adminDb.stop();
         clientDb.stop();
