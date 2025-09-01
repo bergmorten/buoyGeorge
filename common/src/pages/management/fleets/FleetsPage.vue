@@ -45,14 +45,14 @@
                         </div>
                     </q-td>
                 </template>
-                <template #body-cell-vehicles="props">
+                <template #body-cell-producers="props">
                     <q-td :props="props">
                         <div>
                             <n-btn
                                 flat
                                 dense
-                                icon="flight_land"
-                                @click.stop="editVehicles(props.row)"
+                                icon="factory"
+                                @click.stop="editProducers(props.row)"
                             />
                         </div>
                     </q-td>
@@ -84,7 +84,7 @@ import { clientDb } from 'client/services/database';
 import type { Fleet } from 'client/services/database/fleets';
 import EditFleetProjectsDialog from 'cmn/dialogs/Management/fleetProjects/EditFleetProjects.vue';
 import EditFleetUsersDialog from 'cmn/dialogs/Management/fleetUsers/EditFleetUsers.vue';
-//import EditFleetVehiclesDialog from 'client/dialogs/Management/editFleetVehicles.vue';
+//import EditFleetproducersDialog from 'client/dialogs/Management/editFleetProducers.vue';
 import FleetManagement from 'cmn/dialogs/Management/fleet/FleetManagement.vue';
 import FleetsHelp from './FleetsHelp.vue';
 import { useHelpStore } from 'cmn/stores/help';
@@ -111,8 +111,8 @@ const fleetColumns: QTableProps['columns'] = [
         align: 'center',
     },
     {
-        name: 'vehicles',
-        label: 'Vehicles',
+        name: 'producers',
+        label: 'Producers',
         field: 'id',
         sortable: false,
         align: 'center',
@@ -135,7 +135,7 @@ const pagination = {
 };
 
 const fleetRows = computed(() => {
-    const allRows = Array.from(clientDb.fleets.values());
+    const allRows = clientDb.fleetArray.value;
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();
@@ -169,9 +169,9 @@ const editUsers = (fleet: Fleet) => {
     });
 };
 
-const editVehicles = (fleet: Fleet) => {
+const editProducers = (fleet: Fleet) => {
     $q.dialog({
-        // component: EditFleetVehiclesDialog,
+        // component: EditFleetProducersDialog,
         componentProps: { fleet },
     });
 };

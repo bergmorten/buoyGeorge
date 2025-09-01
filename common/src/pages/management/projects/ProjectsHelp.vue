@@ -1,7 +1,7 @@
 <template>
     <p>
         This is where you view and manage your organization projects. To read
-        more about projects and their relations to vehicles, fleets, nose cones
+        more about projects and their relations to producers, fleets, nose cones
         and users, click here (TODO ADD LINK).
     </p>
     <p>

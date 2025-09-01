@@ -1,4 +1,4 @@
-import { shallowReactive, ref } from 'vue';
+import { shallowReactive, ref, computed } from 'vue';
 import client, { type Client } from './client';
 import modem, { type Modem } from './modem';
 import { ConnectionState } from 'aws-amplify/data';
@@ -81,10 +81,15 @@ const useDatabase = () => {
         await sync();
     };
 
+    const clientsArray = computed(() => Array.from(clients.values()));
+    const modemsArray = computed(() => Array.from(modems.values()));
+
     return {
         clients,
+        clientsArray,
         client,
         modems,
+        modemsArray,
         modem,
         isConnected,
         clear,

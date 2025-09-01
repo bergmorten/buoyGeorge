@@ -117,7 +117,7 @@ const pagination = {
 const projectIsLoading = clientDb.project.isLoading;
 
 const showActiveProjects = () => {
-    const allRows = Array.from(clientDb.projects.values());
+    const allRows = clientDb.projectArray.value;
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();

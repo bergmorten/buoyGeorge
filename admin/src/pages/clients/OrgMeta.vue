@@ -342,7 +342,7 @@ const resetOrg = () => {
 const orgAdmins = computed(() => {
     const data = clientDb.usersArray.value;
 
-    return Array.from(data.filter((el) => el.orgAdmin));
+    return data.filter((el) => el.orgAdmin);
 });
 
 const countries = Object.entries(getCodeList())

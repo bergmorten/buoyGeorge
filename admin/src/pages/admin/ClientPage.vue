@@ -148,8 +148,7 @@ const pagination = {
 const isLoading = adminDb.client.isLoading;
 
 const activeClients = () => {
-    const allRows = Array.from(adminDb.clients.values());
-
+    const allRows = adminDb.clientsArray.value;
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();
         return allRows

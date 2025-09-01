@@ -102,9 +102,7 @@ const fleetProjects = computed(() => {
     );
 });
 
-const projects = computed(() => {
-    return Array.from(clientDb.projects.values());
-});
+const projects = clientDb.projectArray;
 
 const selected = computed(() => {
     return Array.from(projects.value).filter((el) =>

@@ -3,13 +3,13 @@
     <p>
         You may filter by name, or simply find what you are looking for in the
         list. If the list is empty, you may create a new fleet by clicking "New
-        fleet". From the list you may assign users and vehicles to your fleet,
+        fleet". From the list you may assign users and producers to your fleet,
         and assign you fleet to a project by clicking the corresponding buttons.
     </p>
 
     <ul>
         <li>Click (<q-icon name="groups" />) to view and edit users</li>
-        <li>Click (<q-icon name="flight_land" />) to view and edit vehicles</li>
+        <li>Click (<q-icon name="factory" />) to view and edit producers</li>
         <li>
             Click (<q-icon name="dashboard_customize" />) to view and edit
             projects

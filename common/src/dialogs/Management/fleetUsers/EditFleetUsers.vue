@@ -122,9 +122,7 @@ const fleetUsers = computed(() => {
     );
 });
 
-const users = computed(() => {
-    return Array.from(clientDb.users.values());
-});
+const users = clientDb.usersArray;
 const selected = computed(() => {
     return Array.from(users.value).filter((el) =>
         fleetUsers.value.some((fu) => fu.userId === el.id),

@@ -302,9 +302,7 @@ const userSignOut = async () => {
     Amplify.configure(awsOriginalConfig);
 };
 
-const clients = computed(() => {
-    return Array.from(adminDb.clients.values());
-});
+const clients = adminDb.clientsArray;
 
 const switchClient = async (
     newClient: Client | null,

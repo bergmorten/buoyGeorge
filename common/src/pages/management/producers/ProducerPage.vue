@@ -108,7 +108,7 @@ const pagination = {
 const producerIsLoading = clientDb.producer.isLoading;
 
 const showActiveProducer = () => {
-    const allRows = Array.from(clientDb.producers.values());
+    const allRows = clientDb.producerArray.value;
 
     return allRows;
 };

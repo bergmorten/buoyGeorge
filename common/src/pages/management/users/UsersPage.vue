@@ -147,7 +147,7 @@ const pagination = {
 const userIsLoading = clientDb.user.isLoading;
 
 const showActiveUser = () => {
-    const allRows = Array.from(clientDb.users.values());
+    const allRows = clientDb.usersArray.value;
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();
