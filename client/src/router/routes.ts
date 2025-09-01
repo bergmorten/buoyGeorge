@@ -49,8 +49,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'management/meta',
                 name: 'management_meta',
-                component: () =>
-                    import('client/pages/management/org/OrgPage.vue'),
+                component: () => import('cmn/pages/management/org/OrgPage.vue'),
                 meta: {
                     menuSection: 'Management',
                     subSection: 'Meta',
@@ -62,7 +61,7 @@ const routes: RouteRecordRaw[] = [
                 path: 'management/users',
                 name: 'management_users',
                 component: () =>
-                    import('client/pages/management/users/UsersPage.vue'),
+                    import('cmn/pages/management/users/UsersPage.vue'),
                 meta: {
                     menuSection: 'Management',
                     subSection: 'Users',
@@ -74,7 +73,7 @@ const routes: RouteRecordRaw[] = [
                 path: 'management/fleets',
                 name: 'management_fleets',
                 component: () =>
-                    import('client/pages/management/fleets/FleetsPage.vue'),
+                    import('cmn/pages/management/fleets/FleetsPage.vue'),
                 meta: {
                     menuSection: 'Management',
                     subSection: 'Fleets',
@@ -86,7 +85,7 @@ const routes: RouteRecordRaw[] = [
                 path: 'management/projects',
                 name: 'management_projects',
                 component: () =>
-                    import('client/pages/management/projetcs/ProjectsPage.vue'),
+                    import('cmn/pages/management/projects/ProjectsPage.vue'),
                 meta: {
                     menuSection: 'Management',
                     subSection: 'Projects',

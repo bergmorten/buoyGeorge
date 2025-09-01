@@ -5,17 +5,17 @@
     >
         <div class="text-bold q-mt-md">
             <q-table
-                title="Organization projects"
-                :rows="projectRows"
-                :columns="projectColumns"
+                title="Organization users"
+                :rows="userRows"
+                :columns="userColumns"
                 :pagination="pagination"
-                :loading="projectIsLoading"
                 row-key="id"
                 virtual-scroll
                 flat
                 bordered
-                class="project-table scroll-table"
-                @row-click="viewProject"
+                class="user-table scroll-table"
+                :loading="userIsLoading"
+                @row-click="viewUser"
             >
                 <template #top>
                     <q-input
@@ -31,14 +31,7 @@
                         </template>
                     </q-input>
                     <q-space />
-                    <n-btn active label="New project" @click="newProject" />
-                </template>
-                <template #body-cell-avatar="props">
-                    <q-td :props="props">
-                        <div>
-                            <avataaar-image :config="props.row.avatarHash" />
-                        </div>
-                    </q-td>
+                    <n-btn active label="New user" @click="newUser" />
                 </template>
                 <template #body-cell-orgAdmin="props">
                     <q-td :props="props">
@@ -50,14 +43,29 @@
                 <template #body-cell-fleets="props">
                     <q-td :props="props">
                         <div>
-                            <q-btn
-                                flat
+                            <n-btn
                                 dense
                                 icon="groups"
                                 @click.stop="editFleets(props.row)"
                             />
                         </div>
                     </q-td>
+                </template>
+                <template #bottom-row>
+                    <div class="table-buttons row">
+                        <q-checkbox
+                            v-model="showArchived"
+                            label="Show archived users"
+                        />
+                    </div>
+                </template>
+                <template #no-data>
+                    <div
+                        class="full-width row justify-end items-center q-gutter-sm"
+                    >
+                        <q-icon size="2em" name="warning" />
+                        <span> No data! </span>
+                    </div>
                 </template>
             </q-table>
         </div>
@@ -67,6 +75,9 @@
 <script setup lang="ts">
 import type { QTableProps } from 'quasar';
 import { useQuasar } from 'quasar';
+import { db } from 'client/services/database';
+import type { User } from 'client/services/database/users';
+import type { Ref } from 'vue';
 import {
     computed,
     ref,
@@ -76,28 +87,47 @@ import {
     getCurrentInstance,
 } from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
-import { db } from 'client/services/database';
-import type { Project } from 'client/services/database/projects';
-import type { Ref } from 'vue';
-import AvataaarImage from 'cmn/components/Avataaars/avataaarImage.vue';
-import EditProjectFleetsDialog from 'client/dialogs/Management/projectFleet/EditProjectFleets.vue';
-import ProjectManagement from 'client/dialogs/Management/project/ProjectManagement.vue';
+import EditUserFleetsDialog from 'cmn/dialogs/Management/userFleets/EditUserFleets.vue';
+import UserManagement from 'cmn/dialogs/Management/user/UserManagement.vue';
 import { logger } from 'cmn/lib/logger';
-import ProjectsHelp from './ProjectsHelp.vue';
+import UsersHelp from './UsersHelp.vue';
 import { useHelpStore } from 'cmn/stores/help';
 
 const helpStore = useHelpStore();
+
 const $q = useQuasar();
+//const router = useRouter();
 const filter = ref('');
 const showArchived = ref(false);
-const archivedProjects = ref([]) as Ref<Project[]>;
-const projectColumns: QTableProps['columns'] = [
+const archivedUsers = ref([]) as Ref<User[]>;
+const userColumns: QTableProps['columns'] = [
     {
         name: 'name',
         label: 'Name',
-        field: 'name',
+        field: 'fullName',
         sortable: true,
         align: 'left',
+    },
+    {
+        name: 'email',
+        label: 'Email',
+        field: 'email',
+        sortable: true,
+        align: 'left',
+    },
+    {
+        name: 'phone',
+        label: 'Phone',
+        field: 'phone',
+        sortable: true,
+        align: 'left',
+    },
+    {
+        name: 'orgAdmin',
+        label: 'Admin',
+        field: 'orgAdmin',
+        sortable: true,
+        align: 'center',
     },
     {
         name: 'fleets',
@@ -114,83 +144,82 @@ const pagination = {
     rowsPerPage: 10,
 };
 
-const projectIsLoading = db.project.isLoading;
+const userIsLoading = db.user.isLoading;
 
-const showActiveProjects = () => {
-    const allRows = Array.from(db.projects.values());
+const showActiveUser = () => {
+    const allRows = Array.from(db.users.values());
 
     if (filter.value) {
         const searchValue = filter.value.toLowerCase();
         return allRows
-            .filter((el) => el.name.toLowerCase().includes(searchValue))
-            .sort((a, b) => b.name.localeCompare(a.name));
+            .filter((el) => el.fullName.toLowerCase().includes(searchValue))
+            .sort((a, b) => b.fullName.localeCompare(a.fullName));
     } else {
         return allRows;
     }
 };
-
-const updateArchivedProjects = async () => {
+const updateArchivedUsers = async () => {
     try {
-        const allRows = await db.project.getAll(true);
+        const allRows = await db.user.getAll(true);
 
         if (filter.value) {
             const searchValue = filter.value.toLowerCase();
-            archivedProjects.value = allRows
-                .filter((el) => el.name.toLowerCase().includes(searchValue))
-                .sort((a, b) => b.name.localeCompare(a.name));
+            archivedUsers.value = allRows
+                .filter((el) => el.fullName.toLowerCase().includes(searchValue))
+                .sort((a, b) => b.fullName.localeCompare(a.fullName));
         } else {
-            archivedProjects.value = allRows;
+            archivedUsers.value = allRows;
         }
     } catch (e) {
-        logger.error($q, 'Error fetching archived projects', e);
+        logger.error($q, 'Error fetching archived users', e);
     }
 };
-const projectRows = computed(() => {
-    if (showArchived.value) return archivedProjects.value;
-    return showActiveProjects();
+
+const userRows = computed(() => {
+    if (showArchived.value) return archivedUsers.value;
+    return showActiveUser();
 });
 
-const viewProject = (evt: Event, row: Project) => {
+const viewUser = (evt: Event, row: User) => {
     $q.dialog({
-        component: ProjectManagement,
+        component: UserManagement,
         componentProps: {
-            project: row,
+            user: row,
         },
     }).onOk(async () => {
         if (showArchived.value) {
-            await updateArchivedProjects();
+            await updateArchivedUsers();
         }
     });
 };
-const newProject = () => {
+const newUser = () => {
     $q.dialog({
-        component: ProjectManagement,
+        component: UserManagement,
     }).onOk(async () => {
         if (showArchived.value) {
-            await updateArchivedProjects();
+            await updateArchivedUsers();
         }
     });
 };
-const editFleets = (project: Project) => {
+
+const editFleets = (user: User) => {
     $q.dialog({
-        component: EditProjectFleetsDialog,
-        componentProps: { project },
+        component: EditUserFleetsDialog,
+        componentProps: { user },
     });
 };
+
 watch(showArchived, async () => {
     if (showArchived.value) {
-        await updateArchivedProjects();
+        await updateArchivedUsers();
     }
 });
+
 onMounted(() => {
     const myName = getCurrentInstance()?.type.__name;
 
     if (myName)
-        helpStore.addHelp({
-            name: myName,
-            type: 'page',
-            helpPage: ProjectsHelp,
-        });
+        helpStore.addHelp({ name: myName, type: 'page', helpPage: UsersHelp });
 });
 onUnmounted(() => {
     const myName = getCurrentInstance()?.type.__name;
@@ -199,7 +228,7 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-.project-table {
+.user-table {
     width: 800px;
     max-width: 80vw;
 }
