@@ -42,6 +42,7 @@ const routes: RouteRecordRaw[] = [
                     menuSection: 'Management',
                     subSection: 'Meta',
                     requiresAuth: true,
+                    requiresSuper: true,
                 },
             },
             {
@@ -53,7 +54,19 @@ const routes: RouteRecordRaw[] = [
                     menuSection: 'Management',
                     subSection: 'Users',
                     requiresAuth: true,
-                    requiresOrgAdmin: true,
+                    requiresSuper: true,
+                },
+            },
+            {
+                path: 'management/producers',
+                name: 'management_producers',
+                component: () =>
+                    import('cmn/pages/management/producers/ProducerPage.vue'),
+                meta: {
+                    menuSection: 'Management',
+                    subSection: 'Producers',
+                    requiresAuth: true,
+                    requiresSuper: true,
                 },
             },
             {
@@ -65,7 +78,7 @@ const routes: RouteRecordRaw[] = [
                     menuSection: 'Management',
                     subSection: 'Fleets',
                     requiresAuth: true,
-                    requiresOrgAdmin: true,
+                    requiresSuper: true,
                 },
             },
             {
@@ -77,7 +90,7 @@ const routes: RouteRecordRaw[] = [
                     menuSection: 'Management',
                     subSection: 'Projects',
                     requiresAuth: true,
-                    requiresOrgAdmin: true,
+                    requiresSuper: true,
                 },
             },
             {

@@ -10,7 +10,7 @@ export const setupAuth = (backend: MyBackend) => {
         inviteMessageTemplate: {
             emailSubject: 'Your invitation to join our data management service',
             emailMessage:
-                'You have been invited to join our data management service. Your temporary password is {####} and use your email ({username}) to log in.\n\nThank you!',
+                'You have been invited to join our data management service. Your temporary password is {####} and use your email to log in.\n\nref ({username})\n\nThank you!',
         },
     };
     // TODO enable email and sms MFA

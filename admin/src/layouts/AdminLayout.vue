@@ -84,37 +84,6 @@
                             </q-item-section>
                             <q-item-section>Meta</q-item-section>
                         </q-item>
-                        <q-item
-                            v-ripple
-                            clickable
-                            class="subitem"
-                            :to="{
-                                name: 'management_fleets',
-                            }"
-                            :class="{ active: subSection === 'Fleets' }"
-                        >
-                            <q-item-section avatar>
-                                <q-icon name="apps" />
-                            </q-item-section>
-
-                            <q-item-section>Fleets</q-item-section>
-                        </q-item>
-
-                        <q-item
-                            v-ripple
-                            clickable
-                            class="subitem"
-                            :to="{
-                                name: 'management_producers',
-                            }"
-                            :class="{ active: subSection === 'Producers' }"
-                        >
-                            <q-item-section avatar>
-                                <q-icon name="factory" />
-                            </q-item-section>
-
-                            <q-item-section>Producers</q-item-section>
-                        </q-item>
 
                         <q-item
                             v-ripple
@@ -131,6 +100,37 @@
 
                             <q-item-section>Users</q-item-section>
                         </q-item>
+                        <q-item
+                            v-ripple
+                            clickable
+                            class="subitem"
+                            :to="{
+                                name: 'management_producers',
+                            }"
+                            :class="{ active: subSection === 'Producers' }"
+                        >
+                            <q-item-section avatar>
+                                <q-icon name="factory" />
+                            </q-item-section>
+
+                            <q-item-section>Producers</q-item-section>
+                        </q-item>
+                        <q-item
+                            v-ripple
+                            clickable
+                            class="subitem"
+                            :to="{
+                                name: 'management_fleets',
+                            }"
+                            :class="{ active: subSection === 'Fleets' }"
+                        >
+                            <q-item-section avatar>
+                                <q-icon name="apps" />
+                            </q-item-section>
+
+                            <q-item-section>Fleets</q-item-section>
+                        </q-item>
+
                         <q-item
                             v-ripple
                             clickable

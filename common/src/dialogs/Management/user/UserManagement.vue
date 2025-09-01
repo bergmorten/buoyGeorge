@@ -52,7 +52,7 @@
                             v-model="state.email"
                             filled
                             label="Email"
-                            :rules="[validEmail]"
+                            :rules="[isValidEmail]"
                             lazy-rules
                         />
                         <q-input
@@ -254,7 +254,7 @@ const validEmail = async (email: string) => {
     }
 };
 
-const verifyForm = async (newState: State) => {
+const verifyForm = async (newState: State, oldState?: State) => {
     if (userForm.value) {
         await wait(1); // Hack to make quasar update form elements
         const isValidated = await userForm.value.validate();
@@ -264,9 +264,12 @@ const verifyForm = async (newState: State) => {
     }
 
     if (!newState.fullName) throw new Error('missing name');
-    const isEmailValid = await validEmail(newState.email);
 
-    if (isEmailValid !== true) throw new Error('Not valid email');
+    if (newState.email !== oldState?.email) {
+        const isEmailValid = await validEmail(newState.email);
+
+        if (isEmailValid !== true) throw new Error('Not valid email');
+    }
     if (!newState.phone || isAWSPhone(newState.phone) !== true)
         throw new Error('Not valid phone');
     if (newState.orgAdmin === undefined) throw new Error('missing orgAdmin');
@@ -458,15 +461,15 @@ const sendInvite = () => {
     });
 };
 
-watch(state, async () => {
+watch(state, async (newState, oldState) => {
     try {
-        formValid.value = await verifyForm(state);
+        formValid.value = await verifyForm(newState, oldState);
     } catch {
         formValid.value = false;
     }
 });
 
-onMounted(() => {
+onMounted(async () => {
     try {
         if (isEditing) {
             await resetUser();

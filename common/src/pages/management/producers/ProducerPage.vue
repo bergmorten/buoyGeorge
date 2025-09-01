@@ -31,7 +31,12 @@
                         </template>
                     </q-input>
                     <q-space />
-                    <n-btn active label="New producer" @click="newProducer" />
+                    <n-btn
+                        v-if="isSuperAdmin"
+                        active
+                        label="New producer"
+                        @click="newProducer"
+                    />
                 </template>
 
                 <template #bottom-row>
@@ -74,8 +79,12 @@ import ProducerManagement from 'cmn/dialogs/Management/producer/ProducerManageme
 import { logger } from 'cmn/lib/logger';
 import ProducersHelp from './ProducerHelp.vue';
 import { useHelpStore } from 'cmn/stores/help';
+import { useCognitoUserStore } from 'cmn/stores/cognitoUser';
+import { storeToRefs } from 'pinia';
 
 const helpStore = useHelpStore();
+const cognitoUserStore = useCognitoUserStore();
+const { isSuperAdmin } = storeToRefs(cognitoUserStore);
 
 const $q = useQuasar();
 //const router = useRouter();
@@ -86,7 +95,14 @@ const producerColumns: QTableProps['columns'] = [
     {
         name: 'name',
         label: 'Name',
-        field: 'fullName',
+        field: 'name',
+        sortable: true,
+        align: 'left',
+    },
+    {
+        name: 'type',
+        label: 'Type',
+        field: 'type',
         sortable: true,
         align: 'left',
     },

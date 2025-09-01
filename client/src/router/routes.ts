@@ -70,6 +70,18 @@ const routes: RouteRecordRaw[] = [
                 },
             },
             {
+                path: 'management/producers',
+                name: 'management_producers',
+                component: () =>
+                    import('cmn/pages/management/producers/ProducerPage.vue'),
+                meta: {
+                    menuSection: 'Management',
+                    subSection: 'Producers',
+                    requiresAuth: true,
+                    requiresOrgAdmin: true,
+                },
+            },
+            {
                 path: 'management/fleets',
                 name: 'management_fleets',
                 component: () =>
