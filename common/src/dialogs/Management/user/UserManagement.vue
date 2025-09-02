@@ -426,7 +426,7 @@ const editImage = () => {
 
 const showInvite = computed(() => {
     if (!props.user) return false;
-    if (props.user.lastLogon !== undefined) return false;
+    if (props.user.lastLogon) return false;
 
     return true;
 });

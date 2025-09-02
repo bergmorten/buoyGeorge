@@ -70,18 +70,46 @@ const update = async (updateOrg: UpdateOrg) => {
     return org as Org;
 };
 
+const remove = async (id: string) => {
+    const { errors } = await client.models.Org.delete({ id });
+    if (errors) {
+        throw new Error(
+            `Failed to remove org: ${errors.map((e) => e.message).join(', ')}`,
+        );
+    }
+};
+
+let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
+let deletedSub: Subscription | null = null;
 
 const startSubscriptions = (
     connection: ReturnType<typeof generateClient<Schema>>,
 ) => {
     client = connection;
-    if (updatedSub) stopSubscriptions();
-
+    if (createdSub || updatedSub || deletedSub) stopSubscriptions();
+    createdSub = client.models.Org.onCreate().subscribe({
+        next: (data) => {
+            if (!organization.value) {
+                organization.value = readonly(data);
+            } else Bugsnag.notify('Multiple organizations found');
+        },
+        error: (error) => Bugsnag.notify(error),
+    });
     updatedSub = client.models.Org.onUpdate().subscribe({
         next: (data) => {
             if (data.id === organization.value?.id) {
                 organization.value = readonly(data);
+            }
+        },
+        error: (error) => Bugsnag.notify(error),
+    });
+    deletedSub = client.models.Producer.onDelete({
+        selectionSet: ['id'],
+    }).subscribe({
+        next: () => {
+            if (!organization.value) {
+                organization.value = null;
             }
         },
         error: (error) => Bugsnag.notify(error),
@@ -100,5 +128,6 @@ export default {
     get,
     add,
     update,
+    remove,
     isLoading,
 };

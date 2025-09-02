@@ -97,7 +97,7 @@ const setUpHubEvents = () => {
                     //stopSubscription();
                     cognitoUserStore.invalidateUser();
                     //  await clearOfflineDb();
-                    debugger;
+
                     void router.push({ name: 'guest' }).catch((e) => {
                         console.error('Error pushing guest route', e);
                     });

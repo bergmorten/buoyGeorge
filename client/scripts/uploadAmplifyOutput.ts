@@ -1,5 +1,4 @@
 import adminOutputs from '../../admin/amplify_outputs.json';
-import clientOutputs from '../amplify_outputs.json';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import type { Client } from './models';
 import { version } from '../package.json';
@@ -18,6 +17,7 @@ export const storeAmplifyOutput = async () => {
     if (!adminRegion) {
         throw new Error('Region is not defined');
     }
+    const clientOutputs = await import('../amplify_outputs.json');
     const isSandbox = clientOutputs.custom.isSandbox ?? false;
     const stackName = clientOutputs.custom.stackName;
 
@@ -92,7 +92,7 @@ export const storeAmplifyOutput = async () => {
             throw new Error(
                 `Environment name mismatch ${existing.environmentName} !== ${environmentName}`,
             );
-
+        console.log('Updating existing client:', existing.id);
         await updateExistingClient(
             existing.id,
             client,

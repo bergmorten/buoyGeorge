@@ -348,7 +348,7 @@ const switchClient = async (
     try {
         let config: AwsConfig | undefined = undefined;
         let useSRP_AUTH = true;
-        debugger;
+
         if (newClient) {
             useSRP_AUTH = false;
             const awsExport = newClient.amplifyOutput as unknown as
@@ -420,7 +420,6 @@ const switchClient = async (
             await router.push({ name: 'admin_clients' });
         }
     } catch (error) {
-        debugger;
         logger.warn($q, 'Could not sign in to this client', error);
         Amplify.configure(awsOriginalConfig);
         await signOut();
@@ -469,7 +468,7 @@ onMounted(async () => {
             type: 'negative',
             message: 'Failed to start database connection',
         });
-        debugger;
+
         await signOut();
         await router.push({ name: 'guest' });
     }

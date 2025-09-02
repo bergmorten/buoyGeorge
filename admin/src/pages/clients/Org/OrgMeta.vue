@@ -389,7 +389,7 @@ const updateOrg = async () => {
                 primaryContactId: admin ? admin.id : null,
             };
 
-            await clientDb.org.update(updateOrg);
+            currentOrg.value = await clientDb.org.update(updateOrg);
             resetOrg();
         } else {
             const newOrg: NewOrg = {
@@ -399,7 +399,7 @@ const updateOrg = async () => {
                 primaryContactId: admin ? admin.id : null,
             };
 
-            await clientDb.org.add(newOrg);
+            currentOrg.value = await clientDb.org.add(newOrg);
             resetOrg();
         }
     } catch (err) {

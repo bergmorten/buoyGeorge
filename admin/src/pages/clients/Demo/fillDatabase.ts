@@ -1,5 +1,5 @@
 import { clientDb } from 'client/services/database';
-import type { ProducerStatus } from 'client/services/database/producers';
+
 import { ProducerType } from 'client/services/database/producers';
 import { type DemoDataType } from './demoData';
 import type { Config } from 'unique-names-generator';
@@ -8,16 +8,6 @@ import {
     adjectives,
     names,
 } from 'unique-names-generator';
-
-const randomOperation = () => {
-    const waveHeight = 0.5 + 2 * Math.random(); // 0.5 to 2.5 m;
-    const stateNum = Math.random();
-    let state: ProducerStatus = 'RUNNING';
-    if (stateNum < 0.15) state = 'ABORTED';
-    else if (stateNum < 0.2) state = 'HALTED';
-
-    return { status: JSON.stringify({ waveHeight }), state };
-};
 
 const capitalizeWords = (str: string) => {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -44,10 +34,22 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                 description: 'This is demo project',
             });
             if (!project) throw new Error('Failed to create demo project');
+            const deployment = await clientDb.deployment.add({
+                title: `${entry.name} ${entry.startTime.toLocaleDateString()}`,
+                isArchived: 'false',
+                description: 'This is demo deployment',
+                projectId: project.id,
+                fleetId: fleet.id,
+                createdAt: entry.startTime.toISOString(),
+                deploymentData: '{}',
+            });
+            if (!deployment)
+                throw new Error('Failed to create demo deployment');
             await clientDb.projectFleet.add({
                 fleetId: fleet.id,
                 projectId: project.id,
             });
+
             if (firstUser)
                 await clientDb.userFleet.add({
                     userId: firstUser.id,
@@ -57,13 +59,15 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                 const producerName = capitalizeWords(
                     uniqueNamesGenerator(customConfig).toLocaleLowerCase(),
                 );
-                const operation = randomOperation();
+
                 await clientDb.producer.add({
                     name: producerName,
                     isArchived: 'false',
                     type: ProducerType.GEORGE,
-                    state: operation.state,
-                    status: operation.status,
+                    state: pos.operation.state,
+                    status: pos.operation.status,
+                    lastSeen: pos.operation.lastSeen,
+                    activeDeployment: deployment.id,
                     location: pos,
                     fleetId: fleet.id,
                 });

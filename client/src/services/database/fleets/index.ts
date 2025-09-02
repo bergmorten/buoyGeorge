@@ -95,6 +95,16 @@ const update = async (updateFleet: UpdateFleet) => {
     }
     return fleet;
 };
+
+const remove = async (id: string) => {
+    const { errors } = await client.models.Fleet.delete({ id });
+    if (errors) {
+        throw new Error(
+            `Failed to remove fleet: ${errors.map((e) => e.message).join(', ')}`,
+        );
+    }
+};
+
 const archive = async (id: string, archive: boolean) => {
     // In case we must add additional logic to clean up invisible fleets
     const { errors, data: fleet } = await client.models.Fleet.update(
@@ -155,4 +165,5 @@ export default {
     update,
     archive,
     isLoading,
+    remove,
 };

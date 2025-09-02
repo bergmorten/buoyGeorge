@@ -1,9 +1,45 @@
 // 100 realistic offshore positions near the Norwegian coastline
 // Clusters: Kristiansand→Finnmark, with small offsets into the sea.
+import type { ProducerStatus } from 'client/services/database/producers';
 
 function randRange(min: number, max: number) {
     return Math.random() * (max - min) + min;
 }
+
+const lastSeen = () => {
+    if (Math.random() < 0.05)
+        return Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 7); // 7 days
+    return Date.now() - Math.floor(Math.random() * 1000 * 60 * 30); // 30 minutes
+};
+
+const randomOperation = () => {
+    const baseCurrent = 0.5 + 1 * Math.random(); // 0.5 to 1.5 m/s
+    const currentDirection = Math.random() * 360; // 0 to 360 degrees
+    const current10m = baseCurrent * (0.8 + 0.4 * Math.random()); // 0.8 to 1.2 multiply
+    const direction10m = currentDirection + (Math.random() * 10 - 5); // +/- 5 degrees
+    const current20m = baseCurrent * (0.6 + 0.4 * Math.random()); // 0.6 to 1.0 multiply
+    const direction20m = currentDirection + (Math.random() * 10 - 5); // +/- 5 degrees
+    const current50m = baseCurrent * (0.4 + 0.4 * Math.random()); // 0.4 to 0.8 multiply
+    const direction50m = currentDirection + (Math.random() * 10 - 5); // +/- 5 degrees
+    const waveHeight = 0.5 + 2 * Math.random(); // 0.5 to 2.5 m;
+    const waveDirection =
+        ((currentDirection + 180) % 360) + (Math.random() * 20 - 10); // +/- 10 degrees
+    const stateNum = Math.random();
+    let state: ProducerStatus = 'RUNNING';
+    if (stateNum < 0.15) state = 'ABORTED';
+    else if (stateNum < 0.2) state = 'HALTED';
+
+    return {
+        status: JSON.stringify({
+            wave: { height: waveHeight, direction: waveDirection },
+            current10m: { value: current10m, direction: direction10m },
+            current20m: { value: current20m, direction: direction20m },
+            current50m: { value: current50m, direction: direction50m },
+        }),
+        state,
+        lastSeen: lastSeen(),
+    };
+};
 
 const anchors = [
     // South & Southwest (Skagerrak)
@@ -45,12 +81,27 @@ export const genDemoData = () => {
     // For each anchor, create ~5 offshore points to get ~100 total.
     const data: {
         name: string;
-        positions: { lat: number; lon: number }[];
+        startTime: Date;
+        positions: {
+            lat: number;
+            lon: number;
+            operation: ReturnType<typeof randomOperation>;
+        }[];
     }[] = [];
-    const samplesPerAnchor = Math.ceil(100 / anchors.length);
+    const baseSamplesPerAnchor = 10;
 
     for (const a of anchors) {
-        const pts: { lat: number; lon: number }[] = [];
+        const pts: {
+            lat: number;
+            lon: number;
+            operation: ReturnType<typeof randomOperation>;
+        }[] = [];
+        const samplesPerAnchor =
+            baseSamplesPerAnchor + Math.floor(Math.random() * 5);
+        const startTime = new Date(
+            Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 45),
+        ); // 45 day per sample
+
         for (let i = 0; i < samplesPerAnchor; i++) {
             let lat: number = a.lat;
             let lon: number = a.lon;
@@ -72,10 +123,12 @@ export const genDemoData = () => {
             pts.push({
                 lat: Number(lat.toFixed(4)),
                 lon: Number(lon.toFixed(4)),
+                operation: randomOperation(),
             });
         }
         data.push({
             name: a.name,
+            startTime,
             positions: pts,
         });
     }

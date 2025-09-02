@@ -29,6 +29,8 @@ export const Producer = a
         type: a.string().required(), // This could been an enum, but does not want to update database for each new type
         state: a.enum(['RUNNING', 'HALTED', 'ABORTED']),
         status: a.string(),
+        activeDeployment: a.id(),
+        activeSetup: a.string(),
         fleetId: a
             .id()
             .authorization((allow) => [

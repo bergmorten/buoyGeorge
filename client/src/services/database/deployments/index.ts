@@ -6,76 +6,56 @@ import type { ShallowReactive } from 'vue';
 import Bugsnag from '@bugsnag/js';
 
 let client: ReturnType<typeof generateClient<Schema>>;
-//type Keys = keyof Schema['Producer']['type'];
-type Keys = keyof Schema['Producer']['type'] | 'location.*';
+//type Keys = keyof Schema['Deployment']['type'];
+type Keys = keyof Schema['Deployment']['type'];
 
-export const enum ProducerType {
-    GEORGE = 'GEORGE',
-    ZEPHYR = 'ZEPHYR',
-    ALIZE = 'ALIZE',
-}
-
-export const producerTypes: ReadonlyArray<ProducerType> = [
-    ProducerType.GEORGE,
-    ProducerType.ZEPHYR,
-    ProducerType.ALIZE,
-] as const;
-
-export type Producer = Readonly<
-    Omit<Schema['Producer']['type'], 'manifest' | 'type'> & {
-        type: ProducerType;
-    }
+export type Deployment = Readonly<
+    Omit<Schema['Deployment']['type'], 'deploymentData'>
 >;
 
-export type ProducerStatus = Producer['state'];
-
-export interface FullProducer extends Producer {
-    readonly status: string | null;
-    readonly manifest: string | null;
+export interface FullDeployment extends Deployment {
+    readonly deploymentData: string | null;
 }
-export type NewProducer = Schema['Producer']['createType'];
-export type UpdateProducer = Omit<
-    Schema['Producer']['updateType'],
+export type NewDeployment = Schema['Deployment']['createType'];
+export type UpdateDeployment = Omit<
+    Schema['Deployment']['updateType'],
     'isArchived'
 >;
 const selectionSet = [
     'id',
     'isArchived',
-    'name',
-    'lastSeen',
-    'location.*',
-    'state',
-    'status',
+    'title',
+    'description',
     'fleetId',
-    'type',
+    'projectId',
     'createdAt',
     'updatedAt',
 ] as const satisfies Keys[];
-const fullSet = [...selectionSet, 'manifest'] as const satisfies Keys[];
+const fullSet = [...selectionSet, 'deploymentData'] as const satisfies Keys[];
 
-// type Options = Parameters<typeof client.models.Producer.list>[0];
+// type Options = Parameters<typeof client.models.Deployment.list>[0];
 const isLoading = ref(false);
 const getAll = async (
     includeArchived = false,
-    options?: Parameters<typeof client.models.Producer.list>[0],
+    options?: Parameters<typeof client.models.Deployment.list>[0],
 ) => {
     let token: string | null = null;
-    const producers = [];
+    const deployments = [];
     isLoading.value = true;
     try {
         do {
             const {
-                data: producerBatch,
+                data: deploymentBatch,
                 errors,
                 nextToken,
             } = includeArchived
-                ? await client.models.Producer.list({
+                ? await client.models.Deployment.list({
                       ...options,
                       selectionSet,
                       limit: 100,
                       nextToken: token,
                   })
-                : await client.models.Producer.producerByArchived(
+                : await client.models.Deployment.deploymentByArchived(
                       { isArchived: 'false' },
                       {
                           ...options,
@@ -87,24 +67,24 @@ const getAll = async (
 
             if (errors) {
                 throw new Error(
-                    `Failed to fetch producers: ${errors.map((e) => e.message).join(', ')}`,
+                    `Failed to fetch deployments: ${errors.map((e) => e.message).join(', ')}`,
                 );
             }
             token = nextToken as string | null;
-            producers.push(...producerBatch);
+            deployments.push(...deploymentBatch);
         } while (token);
-        // type ProducerFixed = Omit<(typeof producers)[0], 'isArchived'> & {
+        // type DeploymentFixed = Omit<(typeof deployments)[0], 'isArchived'> & {
         //     readonly isArchived: 'false' | 'true';
         // };
 
-        return producers as Producer[];
+        return deployments as Deployment[];
     } finally {
         isLoading.value = false;
     }
 };
 
 const getFull = async (id: string) => {
-    const { data: fullProducer, errors } = await client.models.Producer.get(
+    const { data: fullDeployment, errors } = await client.models.Deployment.get(
         { id },
         {
             selectionSet: fullSet,
@@ -113,53 +93,53 @@ const getFull = async (id: string) => {
 
     if (errors) {
         throw new Error(
-            `Failed to fetch producer: ${errors.map((e) => e.message).join(', ')}`,
+            `Failed to fetch deployment: ${errors.map((e) => e.message).join(', ')}`,
         );
     }
-    if (!fullProducer) throw new Error(`Producer with id ${id} not found`);
+    if (!fullDeployment) throw new Error(`Deployment with id ${id} not found`);
 
-    return fullProducer as FullProducer;
+    return fullDeployment as FullDeployment;
 };
 
-const add = async (newProducer: NewProducer) => {
-    const { errors, data: producer } = await client.models.Producer.create(
-        newProducer,
+const add = async (newDeployment: NewDeployment) => {
+    const { errors, data: deployment } = await client.models.Deployment.create(
+        newDeployment,
         { selectionSet: fullSet },
     );
     if (errors) {
         throw new Error(
-            `Failed to create producer: ${errors.map((e) => e.message).join(', ')}`,
+            `Failed to create deployment: ${errors.map((e) => e.message).join(', ')}`,
         );
     }
-    return producer;
+    return deployment;
 };
-const update = async (updateProducer: UpdateProducer) => {
-    const { errors, data: producer } = await client.models.Producer.update(
-        updateProducer,
+const update = async (updateDeployment: UpdateDeployment) => {
+    const { errors, data: deployment } = await client.models.Deployment.update(
+        updateDeployment,
         {
             selectionSet: fullSet,
         },
     );
     if (errors) {
         throw new Error(
-            `Failed to update producer: ${errors.map((e) => e.message).join(', ')}`,
+            `Failed to update deployment: ${errors.map((e) => e.message).join(', ')}`,
         );
     }
-    return producer;
+    return deployment;
 };
 
 const remove = async (id: string) => {
-    const { errors } = await client.models.Producer.delete({ id });
+    const { errors } = await client.models.Deployment.delete({ id });
     if (errors) {
         throw new Error(
-            `Failed to remove producer: ${errors.map((e) => e.message).join(', ')}`,
+            `Failed to remove deployment: ${errors.map((e) => e.message).join(', ')}`,
         );
     }
 };
 
 const archive = async (id: string, archive: boolean) => {
-    // In case we must add additional logic to clean up invisible producers
-    const { errors, data: producer } = await client.models.Producer.update(
+    // In case we must add additional logic to clean up invisible deployments
+    const { errors, data: deployment } = await client.models.Deployment.update(
         {
             id,
             isArchived: archive ? 'true' : 'false',
@@ -168,29 +148,29 @@ const archive = async (id: string, archive: boolean) => {
     );
     if (errors) {
         throw new Error(
-            `Failed to update producer: ${errors.map((e) => e.message).join(', ')}`,
+            `Failed to update deployment: ${errors.map((e) => e.message).join(', ')}`,
         );
     }
-    return producer;
+    return deployment;
 };
 let createdSub: Subscription | null = null;
 let updatedSub: Subscription | null = null;
 let deletedSub: Subscription | null = null;
 const startSubscriptions = (
     connection: ReturnType<typeof generateClient<Schema>>,
-    map: ShallowReactive<Map<string, Producer>>,
+    map: ShallowReactive<Map<string, Deployment>>,
 ) => {
     client = connection;
     if (createdSub || updatedSub || deletedSub) stopSubscriptions();
-    createdSub = client.models.Producer.onCreate({ selectionSet }).subscribe({
-        next: (data) => map.set(data.id, data as Producer),
+    createdSub = client.models.Deployment.onCreate({ selectionSet }).subscribe({
+        next: (data) => map.set(data.id, data as Deployment),
         error: (error) => Bugsnag.notify(error),
     });
-    updatedSub = client.models.Producer.onUpdate({ selectionSet }).subscribe({
-        next: (data) => map.set(data.id, data as Producer),
+    updatedSub = client.models.Deployment.onUpdate({ selectionSet }).subscribe({
+        next: (data) => map.set(data.id, data as Deployment),
         error: (error) => Bugsnag.notify(error),
     });
-    deletedSub = client.models.Producer.onDelete({
+    deletedSub = client.models.Deployment.onDelete({
         selectionSet: ['id'],
     }).subscribe({
         next: (data) => map.delete(data.id),

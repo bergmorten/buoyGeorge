@@ -97,6 +97,14 @@ const update = async (updateProject: UpdateProject) => {
     }
     return project;
 };
+const remove = async (id: string) => {
+    const { errors } = await client.models.Project.delete({ id });
+    if (errors) {
+        throw new Error(
+            `Failed to remove project: ${errors.map((e) => e.message).join(', ')}`,
+        );
+    }
+};
 const archive = async (id: string, archive: boolean) => {
     // In case we must add additional logic to clean up invisible projects
     const { errors, data: project } = await client.models.Project.update(
@@ -156,5 +164,6 @@ export default {
     getAll,
     add,
     update,
+    remove,
     archive,
 };

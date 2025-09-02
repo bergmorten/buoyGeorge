@@ -80,7 +80,6 @@ export const useCognitoUserStore = defineStore('cognitoUser', () => {
     };
 
     const invalidateUser = () => {
-        debugger;
         state.validUser = false;
         state.sub = '';
         state.username = '';
@@ -108,7 +107,6 @@ export const useCognitoUserStore = defineStore('cognitoUser', () => {
     });
 
     const isValidUser = computed(() => {
-        debugger;
         return initialized.value && state.validUser;
     });
 
