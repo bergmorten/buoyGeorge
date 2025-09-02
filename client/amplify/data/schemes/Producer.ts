@@ -22,12 +22,12 @@ export const Producer = a
             ]),
         lastSeen: a.timestamp(),
         location: a.customType({
-            lat: a.float(),
-            lon: a.float(),
+            lat: a.float().required(),
+            lon: a.float().required(),
         }),
         manifest: a.string(),
         type: a.string().required(), // This could been an enum, but does not want to update database for each new type
-        state: a.enum(['RUNNING', 'HALTED', 'ABORTED']),
+        state: a.enum(['RUNNING', 'HALTED', 'ABORTED', 'MISSING']),
         status: a.string(),
         activeDeployment: a.id(),
         activeSetup: a.string(),

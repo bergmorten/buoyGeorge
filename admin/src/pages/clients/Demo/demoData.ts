@@ -43,38 +43,38 @@ const randomOperation = () => {
 
 const anchors = [
     // South & Southwest (Skagerrak)
-    { name: 'Kristiansand', lat: 58.15, lon: 8.0 },
-    { name: 'Lindesnes', lat: 58.03, lon: 7.3 },
-    { name: 'Arendal', lat: 58.46, lon: 8.77 },
+    { name: 'Kristiansand', lat: 58.12, lon: 8.04, spread: 0.005 },
+    { name: 'Lindesnes', lat: 58.0324, lon: 7.777, spread: 0.005 },
+    { name: 'Arendal', lat: 58.41, lon: 8.82, spread: 0.005 },
 
     // West coast (North Sea)
-    { name: 'Stavanger', lat: 58.97, lon: 5.73 },
-    { name: 'Haugesund', lat: 59.41, lon: 5.27 },
-    { name: 'Bergen', lat: 60.39, lon: 5.32 },
-    { name: 'Fedje', lat: 60.78, lon: 4.72 },
-    { name: 'Florø', lat: 61.6, lon: 5.03 },
+    { name: 'Stavanger', lat: 58.925, lon: 5.464, spread: 0.01 },
+    { name: 'Haugesund', lat: 59.482, lon: 5.117, spread: 0.01 },
+    { name: 'Bergen', lat: 60.464, lon: 4.861, spread: 0.01 },
+    { name: 'Fedje', lat: 60.79, lon: 4.15, spread: 0.02 },
+    { name: 'Florø', lat: 61.69, lon: 4.8, spread: 0.02 },
 
     // Møre & Romsdal / Trøndelag
-    { name: 'Ålesund', lat: 62.47, lon: 6.15 },
-    { name: 'Kristiansund', lat: 63.11, lon: 7.73 },
-    { name: 'Agdenes', lat: 63.47, lon: 10.21 },
+    { name: 'Ålesund', lat: 62.58, lon: 5.62, spread: 0.02 },
+    { name: 'Kristiansund', lat: 63.11, lon: 7.52, spread: 0.02 },
+    { name: 'Agdenes', lat: 63.45, lon: 10.078, spread: 0.005 },
 
     // Namdalen / Helgeland
-    { name: 'Rørvik', lat: 64.86, lon: 11.24 },
-    { name: 'Brønnøysund', lat: 65.47, lon: 12.21 },
-    { name: 'Sandnessjøen', lat: 66.02, lon: 12.63 },
+    { name: 'Rørvik', lat: 64.723, lon: 11.4, spread: 0.02 },
+    { name: 'Brønnøysund', lat: 65.47, lon: 12.21, spread: 0.02 },
+    { name: 'Sandnessjøen', lat: 66.02, lon: 12.63, spread: 0.02 },
 
     // Nordland (Salten, Lofoten, Vesterålen)
-    { name: 'Bodø', lat: 67.28, lon: 14.4 },
-    { name: 'Svolvær', lat: 68.23, lon: 14.57 },
-    { name: 'Sortland', lat: 68.69, lon: 15.41 },
-    { name: 'Andøya', lat: 69.15, lon: 15.99 },
+    { name: 'Bodø', lat: 67.26, lon: 14.15, spread: 0.02 },
+    { name: 'Svolvær', lat: 68.17, lon: 14.57, spread: 0.02 },
+    { name: 'Sortland', lat: 68.645, lon: 15.42, spread: 0.02 },
+    { name: 'Andøya', lat: 69.1, lon: 16.37, spread: 0.02 },
 
     // Troms & Finnmark
-    { name: 'Senja', lat: 69.44, lon: 17.99 },
-    { name: 'Tromsø', lat: 69.65, lon: 18.96 },
-    { name: 'Hammerfest', lat: 70.66, lon: 23.68 },
-    { name: 'Honningsvåg', lat: 70.98, lon: 25.97 },
+    { name: 'Senja', lat: 69.46, lon: 18.08, spread: 0.02 },
+    { name: 'Tromsø', lat: 69.66, lon: 18.87, spread: 0.01 },
+    { name: 'Hammerfest', lat: 70.66, lon: 23.59, spread: 0.02 },
+    { name: 'Honningsvåg', lat: 70.98, lon: 26.23, spread: 0.02 },
 ] as const;
 
 export const genDemoData = () => {
@@ -106,15 +106,8 @@ export const genDemoData = () => {
             let lat: number = a.lat;
             let lon: number = a.lon;
 
-            if (a.lon > 24) {
-                // Far north (Finnmark): coastline faces north → push out to sea by increasing latitude.
-                lat += randRange(0.15, 0.8);
-                lon += randRange(-0.2, 0.2);
-            } else {
-                // Most of Norway's coast faces the Norwegian Sea/North Sea to the west.
-                lat += randRange(-0.12, 0.12);
-                lon -= randRange(0.15, 0.8); // push westward (to sea)
-            }
+            lat += randRange(-a.spread, a.spread);
+            lon += randRange(-a.spread, a.spread);
 
             // Clamp to a broad, safe marine envelope (roughly offshore Norway)
             lat = Math.max(57.8, Math.min(71.5, lat));

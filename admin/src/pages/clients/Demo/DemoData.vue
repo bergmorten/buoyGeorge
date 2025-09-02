@@ -10,6 +10,7 @@
                     label="Gen random fleet"
                     @click="generateRandomFleet"
                     :disable="working"
+                    :loading="working"
                 />
             </q-card-section>
         </q-card>

@@ -12,7 +12,7 @@ export const useDrawerStore = defineStore('drawer', () => {
 
         _drawerTimeout = setTimeout(() => {
             hide();
-        }, 6000);
+        }, 15000);
     };
     const show = () => {
         menuOpen.value = true;

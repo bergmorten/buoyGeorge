@@ -35,11 +35,23 @@ const routes: RouteRecordRaw[] = [
                     requiresAuth: true,
                 },
             },
+
             {
                 path: 'account/user',
                 name: 'account_settings',
                 component: () =>
                     import('client/pages/account/profile/ProfilePage.vue'),
+                meta: {
+                    menuSection: 'Account',
+                    subSection: 'Profile',
+                    requiresAuth: true,
+                },
+            },
+            {
+                path: 'producers/map',
+                name: 'producers_map',
+                component: () =>
+                    import('client/pages/producers/ProducersMap.vue'),
                 meta: {
                     menuSection: 'Account',
                     subSection: 'Profile',

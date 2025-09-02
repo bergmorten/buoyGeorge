@@ -80,7 +80,7 @@
                                 <q-icon name="view_list" />
                             </q-item-section>
 
-                            <q-item-section>All</q-item-section>
+                            <q-item-section>Table</q-item-section>
                         </q-item>
                         <q-item
                             v-ripple
