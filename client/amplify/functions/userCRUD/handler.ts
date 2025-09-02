@@ -36,8 +36,13 @@ const recordHandler = async (record: DynamoDBRecord): Promise<void> => {
             logger.info('No important changes in user data', user.id);
             return;
         }
+        logger.info(
+            `User data changed: ${user.resendInvite} - ${pastUser.resendInvite}`,
+        );
+        logger.info(JSON.stringify(user));
+        logger.info(JSON.stringify(pastUser));
         if ((user.resendInvite ?? 0) > (pastUser.resendInvite ?? 0)) {
-            logger.warn(`Resend invite to user ${user.email} ${user.id}`);
+            logger.info(`Resend invite to user ${user.email} ${user.id}`);
 
             await insertUser(logger, { user, isResend: true });
 

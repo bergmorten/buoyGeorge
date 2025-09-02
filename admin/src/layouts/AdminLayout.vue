@@ -269,12 +269,13 @@ import { wait } from 'cmn/lib/tools';
 import { useRouter } from 'vue-router';
 import { useCredentialStore } from 'cmn/stores/credentials';
 import { useCognitoUserStore } from 'cmn/stores/cognitoUser';
-
+import { useClientStore } from 'admin/stores/client';
 const $q = useQuasar();
 const router = useRouter();
 const drawerStore = useDrawerStore();
 const routerStore = useRouterStore();
 const credentialsStore = useCredentialStore();
+const clientStore = useClientStore();
 const cognitoUserStore = useCognitoUserStore();
 const { menuOpen, helpOpen } = storeToRefs(drawerStore);
 const showHelp = ref(false);
@@ -283,7 +284,7 @@ type AwsConfig = typeof awsOriginalConfig;
 const client = shallowRef<Client | null>(null);
 const adminMode = ref(true);
 const isLoading = adminDb.client.isLoading;
-const activeClient = ref<Client | null>(null);
+const { activeClient } = storeToRefs(clientStore);
 
 const menuSection = computed(() => {
     return routerStore.routerMeta.menuSection;

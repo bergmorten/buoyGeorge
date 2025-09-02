@@ -1,0 +1,1 @@
+export const AMCHART_LICENSE = 'AM5C343333130';

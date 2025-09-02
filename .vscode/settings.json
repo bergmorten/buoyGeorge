@@ -9,5 +9,32 @@
     "[proto]": {
         "editor.defaultFormatter": "bufbuild.vscode-buf"
     },
-    "cSpell.words": ["ampx", "Avataaar", "Nortek", "serviceworker"]
+    "cSpell.words": [
+        "ampx",
+        "Avataaar",
+        "baselayer",
+        "Basemap",
+        "colorlike",
+        "CSUMB",
+        "dbar",
+        "drawend",
+        "drawstart",
+        "emod",
+        "EPSG",
+        "GEBCO",
+        "geoserver",
+        "mbar",
+        "moveend",
+        "NAVTEQ",
+        "noaa",
+        "Nortek",
+        "openweathermap",
+        "pinia",
+        "scalebar",
+        "scaleline",
+        "serviceworker",
+        "singleclick",
+        "tilegrid",
+        "WMTS"
+    ]
 }

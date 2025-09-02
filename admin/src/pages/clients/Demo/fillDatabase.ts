@@ -55,7 +55,7 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                     userId: firstUser.id,
                     fleetId: fleet.id,
                 });
-            for (const pos of entry.positions) {
+            for (const record of entry.records) {
                 const producerName = capitalizeWords(
                     uniqueNamesGenerator(customConfig).toLocaleLowerCase(),
                 );
@@ -64,11 +64,11 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                     name: producerName,
                     isArchived: 'false',
                     type: ProducerType.GEORGE,
-                    state: pos.operation.state,
-                    status: pos.operation.status,
-                    lastSeen: pos.operation.lastSeen,
+                    state: record.operation.state,
+                    status: record.operation.status,
+                    lastSeen: record.operation.lastSeen,
                     activeDeployment: deployment.id,
-                    location: pos,
+                    location: { lat: record.lat, lon: record.lon },
                     fleetId: fleet.id,
                 });
             }

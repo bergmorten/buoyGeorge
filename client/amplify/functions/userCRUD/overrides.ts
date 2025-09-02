@@ -46,6 +46,7 @@ export const setupUserCrudFunction = (backend: MyBackend) => {
             target: backend.userCRUDFunction.resources.lambda,
             eventSourceArn: userTable.tableStreamArn,
             startingPosition: StartingPosition.LATEST,
+            retryAttempts: 2,
         },
     );
 

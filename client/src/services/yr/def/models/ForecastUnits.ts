@@ -1,0 +1,22 @@
+export type ForecastUnits = {
+    dew_point_temperature?: string;
+    precipitation_amount_max?: string;
+    wind_speed_of_gust?: string;
+    probability_of_precipitation?: string;
+    cloud_area_fraction_high?: string;
+    cloud_area_fraction_medium?: string;
+    cloud_area_fraction_low?: string;
+    wind_from_direction?: string;
+    air_pressure_at_sea_level?: string;
+    air_temperature?: string;
+    ultraviolet_index_clear_sky_max?: string;
+    precipitation_amount_min?: string;
+    cloud_area_fraction?: string;
+    air_temperature_max?: string;
+    precipitation_amount?: string;
+    wind_speed?: string;
+    probability_of_thunder?: string;
+    fog_area_fraction?: string;
+    air_temperature_min?: string;
+    relative_humidity?: string;
+};

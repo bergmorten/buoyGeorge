@@ -31,7 +31,11 @@ chokidar.watch(amplifyOutputsPath).on('all', async (event) => {
         if (true || newHash !== fileHash) {
             console.log('\n\namplify_outputs changed, uploading...');
             fileHash = newHash;
-            await storeAmplifyOutput();
+            try {
+                await storeAmplifyOutput();
+            } catch (error) {
+                console.error('Error uploading amplify_outputs:', error);
+            }
             console.log('Done\n\n');
         }
     }

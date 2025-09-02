@@ -5,6 +5,8 @@ export const setupAuth = (backend: MyBackend) => {
     const { cfnUserPool, cfnIdentityPool, cfnUserPoolClient } =
         backend.auth.resources.cfnResources;
     cfnUserPool.usernameAttributes = [];
+    cfnUserPool.aliasAttributes = ['email'];
+
     cfnUserPool.adminCreateUserConfig = {
         allowAdminCreateUserOnly: true,
         inviteMessageTemplate: {

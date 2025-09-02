@@ -41,6 +41,7 @@ export const lambdaHandler: UserMigrationTriggerHandler = async (
             email_verified: 'true',
             'custom:is_Super': 'true',
         };
+
         event.response.finalUserStatus = 'CONFIRMED';
         event.response.messageAction = 'SUPPRESS';
         logger.info('response: ', event.response);

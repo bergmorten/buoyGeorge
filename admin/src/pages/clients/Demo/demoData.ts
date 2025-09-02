@@ -82,7 +82,7 @@ export const genDemoData = () => {
     const data: {
         name: string;
         startTime: Date;
-        positions: {
+        records: {
             lat: number;
             lon: number;
             operation: ReturnType<typeof randomOperation>;
@@ -91,7 +91,7 @@ export const genDemoData = () => {
     const baseSamplesPerAnchor = 10;
 
     for (const a of anchors) {
-        const pts: {
+        const records: {
             lat: number;
             lon: number;
             operation: ReturnType<typeof randomOperation>;
@@ -120,7 +120,7 @@ export const genDemoData = () => {
             lat = Math.max(57.8, Math.min(71.5, lat));
             lon = Math.max(3.0, Math.min(31.5, lon));
 
-            pts.push({
+            records.push({
                 lat: Number(lat.toFixed(4)),
                 lon: Number(lon.toFixed(4)),
                 operation: randomOperation(),
@@ -129,7 +129,7 @@ export const genDemoData = () => {
         data.push({
             name: a.name,
             startTime,
-            positions: pts,
+            records,
         });
     }
     return data;

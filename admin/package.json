@@ -18,10 +18,8 @@
         "postinstall": "quasar prepare"
     },
     "dependencies": {
-      
-    },
-    "devDependencies": {
-      
+        "@amcharts/amcharts5": "^5.13.6",
+        "vue-json-pretty": "^2.5.0"
     },
     "engines": {
         "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",

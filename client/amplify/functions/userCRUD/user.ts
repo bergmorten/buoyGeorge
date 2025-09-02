@@ -3,6 +3,7 @@ import type { AdminUpdateUserAttributesCommandInput } from '@aws-sdk/client-cogn
 import {
     AdminCreateUserCommand,
     AdminDeleteUserCommand,
+    AdminGetUserCommand,
     ListUsersCommand,
     AdminUpdateUserAttributesCommand,
     CognitoIdentityProviderClient,
@@ -29,13 +30,32 @@ const client = new CognitoIdentityProviderClient({
 //     return result;
 // };
 
+const getUser = async (logger: Logger, user: FullUser) => {
+    // WTF can not search on custom attributes
+    const command = new AdminGetUserCommand({
+        UserPoolId,
+        Username: user.id,
+    });
+    try {
+        const response = await client.send(command);
+        if (response) {
+            return response;
+        }
+        return null;
+    } catch (error) {
+        const errorMsg =
+            error instanceof Error ? error.message : 'Unknown error';
+        logger.error(`Failed to find user: ${user.email} - ${errorMsg}`);
+    }
+    return null;
+};
+
 const findUser = async (logger: Logger, user: FullUser) => {
     // WTF can not search on custom attributes
     const command = new ListUsersCommand({
         UserPoolId,
-        AttributesToGet: ['sub', 'email'],
-        Filter: `"sub" = "${user.id}"`,
-        Limit: 1,
+        Filter: `email = "${user.email}"`, // exact match
+        Limit: 1, // optional, limit results
     });
     try {
         const response = await client.send(command);
@@ -66,8 +86,8 @@ export const insertUser = async (
     if (!isResend) {
         const existingUser = await findUser(logger, user);
         if (existingUser) {
-            logger.error(`User already exists: ${user.id}`);
-            throw new Error(`User already exists: ${user.id}`);
+            logger.error(`User already exists with email: ${user.email}`);
+            throw new Error(`User already exists: ${user.email}`);
         }
     }
     const createCommand = new AdminCreateUserCommand({
@@ -89,6 +109,7 @@ export const insertUser = async (
     });
 
     const response = await client.send(createCommand);
+
     if ((response.$metadata.httpStatusCode ?? 0) > 299) {
         logger.error(
             `Failed to create Cognito user: ${user.id} - ${response.$metadata.httpStatusCode}`,
@@ -102,11 +123,15 @@ export const insertUser = async (
 };
 
 export const deleteUser = async (logger: Logger, user: FullUser) => {
-    const existingUser = await findUser(logger, user);
+    const existingUser = await getUser(logger, user);
 
-    if (!existingUser || !existingUser.Username || !existingUser.Attributes) {
-        logger.error(`User not found: ${user.id}`);
-        throw new Error(`User not found: ${user.id}`);
+    if (
+        !existingUser ||
+        !existingUser.Username ||
+        !existingUser.UserAttributes
+    ) {
+        logger.error(`Delete: User not found: ${user.id}`);
+        throw new Error(`Delete: User not found: ${user.id}`);
     }
 
     const existingUserId = existingUser.Username;
@@ -128,7 +153,10 @@ export const deleteUser = async (logger: Logger, user: FullUser) => {
         } else logger.info(`Cognito user deleted: ${user.id}`);
     } catch (error) {
         if (error instanceof Error && error.name === 'UserNotFoundException') {
-            logger.error(`User not found in Cognito: ${user.id}`, error);
+            logger.error(
+                `Delete: User not found in Cognito: ${user.id}`,
+                error,
+            );
             return;
         }
         throw error;
@@ -147,18 +175,22 @@ export const modifyUser = async (
     if (user.email !== pastUser.email) {
         const duplicateUser = await findUser(logger, user);
         if (duplicateUser) {
-            logger.error(`User already exists: ${user.id}`);
-            throw new Error(`User already exists: ${user.id}`);
+            logger.error(`modifyUser: Email already exists: ${user.id}`);
+            throw new Error(`modifyUser: Email already exists: ${user.id}`);
         }
         UserAttributes.push(
             { Name: 'email', Value: user.email },
             { Name: 'email_verified', Value: 'True' }, // Should we set unverified?
         );
     }
-    const existingUser = await findUser(logger, pastUser);
-    if (!existingUser || !existingUser.Username || !existingUser.Attributes) {
-        logger.error(`User not found: ${user.id}`);
-        throw new Error(`User not found: ${user.id}`);
+    const existingUser = await getUser(logger, pastUser);
+    if (
+        !existingUser ||
+        !existingUser.Username ||
+        !existingUser.UserAttributes
+    ) {
+        logger.error(`Modify: User not found: ${user.id}`);
+        throw new Error(`Modify: User not found: ${user.id}`);
     }
     const existingUserId = existingUser.Username;
 
@@ -203,7 +235,10 @@ export const modifyUser = async (
         }
     } catch (error) {
         if (error instanceof Error && error.name === 'UserNotFoundException') {
-            logger.error(`User not found in Cognito: ${user.id}`, error);
+            logger.error(
+                `Modify: User not found in Cognito: ${user.id}`,
+                error,
+            );
             return;
         }
         throw error;

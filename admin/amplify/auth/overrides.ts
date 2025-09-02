@@ -4,7 +4,8 @@ export const setupAuth = (backend: MyBackend) => {
     // Enable delete protection on auth on client environments
     const { cfnUserPool, cfnIdentityPool, cfnUserPoolClient } =
         backend.auth.resources.cfnResources;
-    //cfnUserPool.usernameAttributes = [];
+    cfnUserPool.usernameAttributes = [];
+    cfnUserPool.aliasAttributes = ['email'];
     cfnUserPool.adminCreateUserConfig = {
         allowAdminCreateUserOnly: true,
         inviteMessageTemplate: {

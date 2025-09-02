@@ -1,14 +1,26 @@
-import adminOutputs from '../../admin/amplify_outputs.json';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import type { Client } from './models';
 import { version } from '../package.json';
 import { fetchExisting } from './queries';
 import { updateExistingClient, createNewClient } from './mutations';
-
+import { readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 // Configure the signed fetcher for your AppSync service and region
 
 export const storeAmplifyOutput = async () => {
     // Your AppSync GraphQL endpoint URL
+
+    const clientPath = fileURLToPath(
+        new URL('../amplify_outputs.json', import.meta.url),
+    );
+    const adminPath = fileURLToPath(
+        new URL('../../admin/amplify_outputs.json', import.meta.url),
+    );
+    if (!existsSync(clientPath))
+        throw new Error('client amplify_outputs.json does not exist');
+    if (!existsSync(adminPath))
+        throw new Error('admin amplify_outputs.json does not exist');
+    const adminOutputs = JSON.parse(readFileSync(adminPath, 'utf-8'));
     const adminGraphqlEndpoint = adminOutputs?.data?.url;
     if (!adminGraphqlEndpoint) {
         throw new Error('GraphQL endpoint is not defined');
@@ -17,7 +29,7 @@ export const storeAmplifyOutput = async () => {
     if (!adminRegion) {
         throw new Error('Region is not defined');
     }
-    const clientOutputs = await import('../amplify_outputs.json');
+    const clientOutputs = JSON.parse(readFileSync(clientPath, 'utf-8'));
     const isSandbox = clientOutputs.custom.isSandbox ?? false;
     const stackName = clientOutputs.custom.stackName;
 
