@@ -28,6 +28,7 @@ import { fullHeight } from 'cmn/composable/helpers';
 import { useQuasar } from 'quasar';
 import BaseMap from 'client/components/Map/baseMap.vue';
 import type { LatLon, UseMap } from 'client/lib/map';
+import { getIDW } from 'client/lib/map/idw';
 import YrWidget from 'client/components/Weather/yrWidget.vue';
 import { clientDb } from 'client/services/database';
 import { drawProducer } from 'client/lib/map/producer';
@@ -62,11 +63,18 @@ watch(
 
 onMounted(async () => {
     try {
-        debugger;
         if (!mapRef.value) throw new Error('Map not loaded');
 
         map = mapRef.value.getUseMap();
         updateProducers();
+
+        const producerLayer = map.getVectorLayer('producers-markers');
+        if (producerLayer) {
+            const source = producerLayer.source;
+            const idw = getIDW(source);
+            map.addLayer(idw);
+        }
+
         map.zoomVectorLayer('producers-markers');
     } catch (error) {
         logger.error($q, 'Could not load producers', error);

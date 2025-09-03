@@ -1,8 +1,8 @@
 import { Circle as CircleStyle, Fill, Style } from 'ol/style';
 
-import type { ProducerStatus } from 'client/services/database/producers';
+import type { ProducerState } from 'client/services/database/producers';
 
-const getColorForStatus = (status: ProducerStatus, highlighted: boolean) => {
+const getColorForStatus = (status: ProducerState, highlighted: boolean) => {
     if (highlighted) return 'white';
     switch (status) {
         case 'RUNNING':
@@ -18,10 +18,7 @@ const getColorForStatus = (status: ProducerStatus, highlighted: boolean) => {
     }
 };
 
-export const producerStyle = (
-    status: ProducerStatus,
-    highlighted?: boolean,
-) => {
+export const producerStyle = (status: ProducerState, highlighted?: boolean) => {
     return new Style({
         zIndex: 9999,
         image: new CircleStyle({

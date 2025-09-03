@@ -5,6 +5,7 @@ import { fromLonLat } from 'ol/proj';
 import { producerStyle } from '../styles';
 import Feature from 'ol/Feature';
 import type Geometry from 'ol/geom/Geometry';
+import type { ProducerStatus } from 'client/services/database/producers/models';
 
 export const drawProducer = () => {
     const featureProducer = (producer: Producer) => {
@@ -24,6 +25,19 @@ export const drawProducer = () => {
         const style = producerStyle(producer.state);
         const highlightedStyle = producerStyle(producer.state, true);
         feature.set('hoverStyle', highlightedStyle);
+        if (producer.status) {
+            try {
+                const status: ProducerStatus = JSON.parse(producer.status);
+                if (status && status.wave) {
+                    const { height } = status.wave;
+                    let strength = (height * 100) / 5;
+                    if (strength > 100) strength = 100;
+                    feature.set('strength', strength);
+                }
+            } catch (error) {
+                console.error('Error setting feature strength:', error);
+            }
+        }
         feature.setStyle(style);
 
         return feature;

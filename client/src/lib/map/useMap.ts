@@ -8,7 +8,7 @@ import type {
     LayerDefXYZ,
     ScaleOptions,
 } from './models';
-import { Circle, Fill, Style } from 'ol/style';
+import type { Style } from 'ol/style';
 import type { StyleLike } from 'ol/style/Style';
 import type { FlatStyleLike } from 'ol/style/flat';
 import type { Coordinate } from 'ol/coordinate';
@@ -20,13 +20,12 @@ import { asColorLike, type ColorLike } from 'ol/colorlike';
 import { getTopLeft, getWidth } from 'ol/extent';
 import { mapLayers } from './overLays';
 import { throttle } from 'quasar';
-import type BaseLayer from 'ol/layer/Base';
 import Colorize from 'ol-ext/filter/Colorize';
-import DayNight from 'ol-ext/source/DayNight';
 import type { FeatureLike } from 'ol/Feature';
 import type Feature from 'ol/Feature';
 import type Geometry from 'ol/geom/Geometry';
 import OlMap from 'ol/Map';
+import type Layer from 'ol/layer/Layer';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -85,7 +84,6 @@ export const useMap = ({
         }
     >();
 
-    let dayNightLayer: BaseLayer | undefined = undefined;
     const grayFilter = new Colorize();
     const greenFilter = new Colorize();
 
@@ -160,6 +158,10 @@ export const useMap = ({
         setTimeout(() => {
             clickHandlerPaused = false;
         }, 500); // Must have this delay since map use single click listener
+
+    const addLayer = (layer: Layer) => {
+        map.addLayer(layer);
+    };
 
     const addVectorLayer = (
         name: string,
@@ -609,36 +611,6 @@ export const useMap = ({
         viewExtent(extent);
     };
 
-    const addDayNight = () => {
-        if (dayNightLayer) removeDayNight(); // Already exits
-        const vectorSource = new DayNight({});
-
-        dayNightLayer = new VectorLayer({
-            source: vectorSource,
-            style: new Style({
-                image: new Circle({
-                    radius: 5,
-                    fill: new Fill({ color: 'red' }),
-                }),
-                /*
-        stroke: new Stroke({
-          color: [0, 0, 0, 1],
-        }),
-        */
-                fill: new Fill({
-                    color: [25, 25, 25, 0.6],
-                }),
-            }),
-        });
-        map.addLayer(dayNightLayer);
-    };
-
-    const removeDayNight = () => {
-        if (!dayNightLayer) return;
-        map.removeLayer(dayNightLayer);
-        dayNightLayer = undefined;
-    };
-
     const dispose = () => {
         map.un('moveend', moveHandler);
         removeMouseEvents();
@@ -673,12 +645,11 @@ export const useMap = ({
         setClickHandler,
         setContextHandler,
         setHoverHandler,
-        addDayNight,
-        removeDayNight,
         getExtent,
         dispose,
         removeClickHandler,
         removeContextHandler,
         removeHoverHandler,
+        addLayer,
     };
 };

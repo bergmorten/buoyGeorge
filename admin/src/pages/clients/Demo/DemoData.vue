@@ -38,7 +38,7 @@ const working = ref(false);
 const _generateRandomFleet = async () => {
     try {
         if (!process.env.DEV) throw new Error('Not in development mode');
-        debugger;
+
         if (clientStore.activeClient?.isSandbox !== true)
             throw new Error('Not a sandbox client');
         working.value = true;

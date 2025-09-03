@@ -27,7 +27,7 @@ export type Producer = Readonly<
     }
 >;
 
-export type ProducerStatus = Producer['state'];
+export type ProducerState = Producer['state'];
 
 export interface FullProducer extends Producer {
     readonly status: string | null;

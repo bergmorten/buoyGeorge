@@ -1,7 +1,7 @@
 // 100 realistic offshore positions near the Norwegian coastline
 // Clusters: Kristiansand→Finnmark, with small offsets into the sea.
-import type { ProducerStatus } from 'client/services/database/producers';
-
+import type { ProducerState } from 'client/services/database/producers';
+import type { ProducerStatus } from 'client/services/database/producers/models';
 function randRange(min: number, max: number) {
     return Math.random() * (max - min) + min;
 }
@@ -25,17 +25,18 @@ const randomOperation = () => {
     const waveDirection =
         ((currentDirection + 180) % 360) + (Math.random() * 20 - 10); // +/- 10 degrees
     const stateNum = Math.random();
-    let state: ProducerStatus = 'RUNNING';
+    let state: ProducerState = 'RUNNING';
     if (stateNum < 0.15) state = 'ABORTED';
     else if (stateNum < 0.2) state = 'HALTED';
-
+    const status: ProducerStatus = {
+        version: 1,
+        wave: { height: waveHeight, direction: waveDirection },
+        current10m: { value: current10m, direction: direction10m },
+        current20m: { value: current20m, direction: direction20m },
+        current50m: { value: current50m, direction: direction50m },
+    };
     return {
-        status: JSON.stringify({
-            wave: { height: waveHeight, direction: waveDirection },
-            current10m: { value: current10m, direction: direction10m },
-            current20m: { value: current20m, direction: direction20m },
-            current50m: { value: current50m, direction: direction50m },
-        }),
+        status: JSON.stringify(status),
         state,
         lastSeen: lastSeen(),
     };
