@@ -656,7 +656,7 @@ onUnmounted(() => {
     .main-item {
         &.active {
             font-weight: 700;
-            //color: #000;
+            color: $active-color !important;
 
             &.single-item {
                 background: $active-color !important;

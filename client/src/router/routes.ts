@@ -53,8 +53,8 @@ const routes: RouteRecordRaw[] = [
                 component: () =>
                     import('client/pages/producers/ProducersMap.vue'),
                 meta: {
-                    menuSection: 'Account',
-                    subSection: 'Profile',
+                    menuSection: 'Producers',
+                    subSection: 'Map',
                     requiresAuth: true,
                 },
             },
