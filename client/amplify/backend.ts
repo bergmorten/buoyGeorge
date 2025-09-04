@@ -18,14 +18,19 @@ import {
 import {
     preTokenGeneration,
     setupPreTokenGenerationFunction,
-} from './functions/preTokenGeneration/resources';
+} from './functions/preTokenGeneration/resource';
 import {
     userMigration,
     setupUserMigrationFunction,
-} from './functions/userMigration/resources';
+} from './functions/userMigration/resource';
+import {
+    sqsHandlerFunction,
+    setupSqsHandlerFunction,
+} from './functions/sqsHandler/resource';
 import { isSandbox } from './isSandbox';
 import { setupBackup } from './backup';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
+import { setupCloudLoop } from './cloudloop/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -37,6 +42,7 @@ export const backend = defineBackend({
     userCRUDFunction,
     commandTriggerFunction,
     recordTriggerFunction,
+    sqsHandlerFunction,
     preTokenGeneration, // Must be placed here for custom policy
     userMigration, // Must be placed here for custom policy
 });
@@ -62,8 +68,12 @@ setupCommandTriggerFunction(backend);
 setupRecordTriggerFunction(backend);
 setupUserMigrationFunction(backend);
 setupPreTokenGenerationFunction(backend);
+
 setupData(backend);
 setupStorage(backend);
+
+const { MOQueue, MTConfirmQueue } = setupCloudLoop(backend);
+setupSqsHandlerFunction(backend, MOQueue, MTConfirmQueue);
 
 backend.addOutput({
     custom: {

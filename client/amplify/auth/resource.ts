@@ -1,7 +1,7 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { userCRUDFunction } from '../functions/userCRUD/resource';
-import { preTokenGeneration } from '../functions/preTokenGeneration/resources';
-import { userMigration } from '../functions/userMigration/resources';
+import { preTokenGeneration } from '../functions/preTokenGeneration/resource';
+import { userMigration } from '../functions/userMigration/resource';
 export { setupAuth } from './overrides';
 
 /**

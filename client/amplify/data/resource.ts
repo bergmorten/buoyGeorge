@@ -13,7 +13,7 @@ import { PushToken } from './schemes/PushToken';
 import { Record } from './schemes/Record';
 import { User } from './schemes/User';
 import { UserFleet } from './schemes/UserFleet';
-import { preTokenGeneration } from '../functions/preTokenGeneration/resources';
+import { preTokenGeneration } from '../functions/preTokenGeneration/resource';
 export { setupData } from './overrides';
 
 //import { flushEvents, record } from 'aws-amplify/analytics'
