@@ -1,7 +1,7 @@
 <template>
     <div class="fit column">
         <div ref="mapDiv" class="col container-map">
-            <ob-btn flat dense round icon="settings" menu class="settings-menu">
+            <n-btn flat dense round icon="settings" menu class="settings-menu">
                 <q-menu>
                     <q-list style="min-width: 100px" class="content">
                         <q-item-label header> Basemap </q-item-label>
@@ -105,8 +105,8 @@
                         </q-item>
                     </q-list>
                 </q-menu>
-            </ob-btn>
-            <q-btn
+            </n-btn>
+            <n-btn
                 dense
                 round
                 unelevated

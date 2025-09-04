@@ -7,6 +7,9 @@ import Feature from 'ol/Feature';
 import type Geometry from 'ol/geom/Geometry';
 import type { ProducerStatus } from 'client/services/database/producers/models';
 
+const scalePercent = (value: number, by: number) => {
+    return Math.min(Math.max((value * 100) / by, 0), 100);
+};
 export const drawProducer = () => {
     const featureProducer = (producer: Producer) => {
         //const lonLat = toLonLat([producer.location.longitude, producer.location.latitude]);
@@ -30,12 +33,16 @@ export const drawProducer = () => {
                 const status: ProducerStatus = JSON.parse(producer.status);
                 if (status && status.wave) {
                     const { height } = status.wave;
-                    let strength = (height * 100) / 5;
-                    if (strength > 100) strength = 100;
-                    feature.set('strength', strength);
+                    const { value: current10m } = status.current10m;
+                    const { value: current20m } = status.current20m;
+                    const { value: current50m } = status.current50m;
+                    feature.set('waveHeight', scalePercent(height, 5));
+                    feature.set('current10m', scalePercent(current10m, 4));
+                    feature.set('current20m', scalePercent(current20m, 4));
+                    feature.set('current50m', scalePercent(current50m, 4));
                 }
             } catch (error) {
-                console.error('Error setting feature strength:', error);
+                console.error('Error setting feature props:', error);
             }
         }
         feature.setStyle(style);

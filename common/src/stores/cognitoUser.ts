@@ -29,6 +29,9 @@ export const useCognitoUserStore = defineStore('cognitoUser', () => {
         try {
             initialized.value = true;
             const authSession = await fetchAuthSession();
+            if (!authSession || !authSession.userSub) {
+                throw new Error('No auth session found');
+            }
 
             const idToken = authSession.tokens?.idToken;
             const sub = idToken?.payload.sub ?? '';
@@ -53,8 +56,8 @@ export const useCognitoUserStore = defineStore('cognitoUser', () => {
             setCognitoData(cognitoData);
             startMonitorUser(username); // Username is id in db
             return true;
-        } catch (err) {
-            console.error('Error in updating cognito user', err);
+        } catch {
+            //console.error('Error in updating cognito user', err);
             invalidateUser();
         }
         return false;

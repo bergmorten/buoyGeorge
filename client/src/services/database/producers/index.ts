@@ -28,6 +28,12 @@ export type Producer = Readonly<
 >;
 
 export type ProducerState = Producer['state'];
+export const producerStates: ReadonlyArray<ProducerState> = [
+    'RUNNING',
+    'HALTED',
+    'ABORTED',
+    'MISSING',
+] as const;
 
 export interface FullProducer extends Producer {
     readonly status: string | null;

@@ -2,6 +2,17 @@
 // Clusters: Kristiansand→Finnmark, with small offsets into the sea.
 import type { ProducerState } from 'client/services/database/producers';
 import type { ProducerStatus } from 'client/services/database/producers/models';
+
+interface Anchor {
+    name: string;
+    lat: number;
+    lon: number;
+    spread: number;
+    count?: number;
+    initialWaveHeight?: number;
+    initialCurrent?: number;
+}
+
 function randRange(min: number, max: number) {
     return Math.random() * (max - min) + min;
 }
@@ -12,16 +23,17 @@ const lastSeen = () => {
     return Date.now() - Math.floor(Math.random() * 1000 * 60 * 30); // 30 minutes
 };
 
-const randomOperation = () => {
-    const baseCurrent = 0.5 + 1 * Math.random(); // 0.5 to 1.5 m/s
+const randomOperation = (anchor: Anchor) => {
+    const baseCurrent = anchor.initialCurrent ?? 0.5 + 1 * Math.random(); // 0.5 to 1.5 m/s
     const currentDirection = Math.random() * 360; // 0 to 360 degrees
     const current10m = baseCurrent * (0.8 + 0.4 * Math.random()); // 0.8 to 1.2 multiply
     const direction10m = currentDirection + (Math.random() * 10 - 5); // +/- 5 degrees
-    const current20m = baseCurrent * (0.6 + 0.4 * Math.random()); // 0.6 to 1.0 multiply
+    const current20m = baseCurrent * (0.6 + 0.2 * Math.random()); // 0.6 to 1.0 multiply
     const direction20m = currentDirection + (Math.random() * 10 - 5); // +/- 5 degrees
-    const current50m = baseCurrent * (0.4 + 0.4 * Math.random()); // 0.4 to 0.8 multiply
+    const current50m = baseCurrent * (0.4 + 0.2 * Math.random()); // 0.4 to 0.8 multiply
     const direction50m = currentDirection + (Math.random() * 10 - 5); // +/- 5 degrees
-    const waveHeight = 0.5 + 2 * Math.random(); // 0.5 to 2.5 m;
+    const baseWaveHeight = anchor.initialWaveHeight ?? 1 + 2 * Math.random(); // 1 to 3 m;
+    const waveHeight = baseWaveHeight * (0.75 + 0.5 * Math.random()); // 0.75 to 1.25 multiply
     const waveDirection =
         ((currentDirection + 180) % 360) + (Math.random() * 20 - 10); // +/- 10 degrees
     const stateNum = Math.random();
@@ -42,7 +54,7 @@ const randomOperation = () => {
     };
 };
 
-const anchors = [
+const anchors: Anchor[] = [
     // South & Southwest (Skagerrak)
     { name: 'Kristiansand', lat: 58.12, lon: 8.04, spread: 0.005 },
     { name: 'Lindesnes', lat: 58.0324, lon: 7.777, spread: 0.005 },
@@ -52,7 +64,14 @@ const anchors = [
     { name: 'Stavanger', lat: 58.925, lon: 5.464, spread: 0.01 },
     { name: 'Haugesund', lat: 59.482, lon: 5.117, spread: 0.01 },
     { name: 'Bergen', lat: 60.464, lon: 4.861, spread: 0.01 },
-    { name: 'Fedje', lat: 60.79, lon: 4.15, spread: 0.02 },
+    {
+        name: 'Fedje',
+        lat: 60.79,
+        lon: 4.15,
+        spread: 0.02,
+        initialWaveHeight: 4,
+        initialCurrent: 2,
+    },
     { name: 'Florø', lat: 61.69, lon: 4.8, spread: 0.02 },
 
     // Møre & Romsdal / Trøndelag
@@ -62,8 +81,8 @@ const anchors = [
 
     // Namdalen / Helgeland
     { name: 'Rørvik', lat: 64.723, lon: 11.4, spread: 0.02 },
-    { name: 'Brønnøysund', lat: 65.47, lon: 12.21, spread: 0.02 },
-    { name: 'Sandnessjøen', lat: 66.02, lon: 12.63, spread: 0.02 },
+    { name: 'Brønnøysund', lat: 65.45, lon: 12.24, spread: 0.015 },
+    { name: 'Sandnessjøen', lat: 66.063, lon: 12.619, spread: 0.02 },
 
     // Nordland (Salten, Lofoten, Vesterålen)
     { name: 'Bodø', lat: 67.26, lon: 14.15, spread: 0.02 },
@@ -76,6 +95,17 @@ const anchors = [
     { name: 'Tromsø', lat: 69.66, lon: 18.87, spread: 0.01 },
     { name: 'Hammerfest', lat: 70.66, lon: 23.59, spread: 0.02 },
     { name: 'Honningsvåg', lat: 70.98, lon: 26.23, spread: 0.02 },
+
+    // NOAA Gulf of America
+    {
+        name: 'NOAA',
+        lat: 29.286,
+        lon: -87.69,
+        spread: 0.02,
+        count: 100,
+        initialWaveHeight: 3,
+        initialCurrent: 3,
+    },
 ] as const;
 
 export const genDemoData = () => {
@@ -98,7 +128,7 @@ export const genDemoData = () => {
             operation: ReturnType<typeof randomOperation>;
         }[] = [];
         const samplesPerAnchor =
-            baseSamplesPerAnchor + Math.floor(Math.random() * 5);
+            a.count ?? baseSamplesPerAnchor + Math.floor(Math.random() * 5);
         const startTime = new Date(
             Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 45),
         ); // 45 day per sample
@@ -110,14 +140,10 @@ export const genDemoData = () => {
             lat += randRange(-a.spread, a.spread);
             lon += randRange(-a.spread, a.spread);
 
-            // Clamp to a broad, safe marine envelope (roughly offshore Norway)
-            lat = Math.max(57.8, Math.min(71.5, lat));
-            lon = Math.max(3.0, Math.min(31.5, lon));
-
             records.push({
                 lat: Number(lat.toFixed(4)),
                 lon: Number(lon.toFixed(4)),
-                operation: randomOperation(),
+                operation: randomOperation(a),
             });
         }
         data.push({
