@@ -42,10 +42,14 @@ const randomOperation = (anchor: Anchor) => {
     else if (stateNum < 0.2) state = 'HALTED';
     const status: ProducerStatus = {
         version: 1,
-        wave: { height: waveHeight, direction: waveDirection },
-        current10m: { value: current10m, direction: direction10m },
-        current20m: { value: current20m, direction: direction20m },
-        current50m: { value: current50m, direction: direction50m },
+        wave: {
+            height: waveHeight,
+            direction: waveDirection,
+            speed: Math.min((waveHeight * 9.81) ** 0.5, 30),
+        },
+        current10m: { speed: current10m, direction: direction10m },
+        current20m: { speed: current20m, direction: direction20m },
+        current50m: { speed: current50m, direction: direction50m },
     };
     return {
         status: JSON.stringify(status),

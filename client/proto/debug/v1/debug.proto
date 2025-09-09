@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package debug.v1;
+
+// Debug message for testing GNSS and Iridium
+message Debug {
+  // Message sent UTC Seconds since 2025-01-01T00:00:00Z
+  uint32 seconds_2025 = 1;
+  // Iridium start TTS milliseconds
+  uint32 iridium_start_tts = 2;
+  // milliseconds
+  uint32 iridium_prev_message_transfer_time = 3;
+  // 0-5 bars
+  uint32 iridium_signal_strength = 4;
+  // milliseconds
+  uint32 gnss_time_to_first_fix = 6;
+  // number of satellites
+  uint32 gnss_num_satellites = 7;
+  // 0-5 bars
+  uint32 gnss_signal_strengths = 8;
+  // Latitude
+  double gnss_lat = 9;
+  // Longitude
+  double gnss_lon = 10;
+  // Altitude
+  double gnss_alt = 11;
+}

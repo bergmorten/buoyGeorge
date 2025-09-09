@@ -95,6 +95,18 @@
                         {{ center.lon.toFixed(4) }}
                     </div>
                     <yr-widget :position="center" />
+                    <q-space />
+                    <q-checkbox
+                        v-model="azimuthEnabled"
+                        class="q-mr-lg"
+                        color="dense row justify-center items-center"
+                    >
+                        <q-icon name="sym_o_target" size="18px" />
+                        <q-tooltip>
+                            Draw Azimuth with target zone and depth average '
+                            current on mouse hover
+                        </q-tooltip>
+                    </q-checkbox>
                 </q-toolbar>
             </template>
         </base-map>
@@ -103,11 +115,11 @@
 
 <script setup lang="ts">
 import { logger } from 'cmn/lib/logger';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch, onUnmounted } from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
 import { useQuasar } from 'quasar';
 import BaseMap from 'client/components/Map/baseMap.vue';
-import type { LatLon, UseMap } from 'client/lib/map';
+import type { LatLon } from 'client/lib/map';
 import { getIDW } from 'client/lib/map/idw';
 import YrWidget from 'client/components/Weather/yrWidget.vue';
 import { clientDb } from 'client/services/database';
@@ -117,15 +129,20 @@ import {
     type ProducerState,
 } from 'client/services/database/producers';
 import type { Fleet } from 'client/services/database/fleets';
+import { drawAzimuth } from 'client/lib/map/azimuth/azimuth';
+import type { ProducerStatus } from 'client/services/database/producers/models';
+import type Feature from 'ol/Feature';
+import type { Geometry } from 'ol/geom';
 
 // import { useCognitoUserStore } from 'cmn/stores/cognitoUser';
 const iwdModes = [
     { label: 'Wave height', value: 'waveHeight' },
+    { label: 'Wave speed', value: 'waveSpeed' },
     { label: 'Current 10m', value: 'current10m' },
     { label: 'Current 20m', value: 'current20m' },
     { label: 'Current 50m', value: 'current50m' },
 ] as const;
-let map: UseMap;
+
 // const cognitoUserStore = useCognitoUserStore();
 
 // const adminAll = ref(false);
@@ -135,23 +152,79 @@ const center = ref<LatLon>({ lat: 0, lon: 0 });
 const allProducers = clientDb.producerArray;
 const allFleets = clientDb.fleetArray;
 const working = ref(false);
+const azimuthEnabled = ref(true);
 const states = ref<ProducerState[] | null>(null);
 const idwMode = ref<(typeof iwdModes)[number] | null>(null);
 const fleets = ref<Fleet[] | null>(null);
 const fleetNeedle = ref<string | null>(null);
+let targetId: string | undefined = undefined;
+
 const { featureProducers } = drawProducer();
 
 const updateProducers = () => {
+    const map = mapRef.value?.getUseMap();
     if (!map) return;
     map.updateVectorLayer(
         'producers-markers',
         featureProducers(producersFiltered.value),
     );
+    if (targetId) drawAzimuthLayer(targetId);
 };
 const filterFleet = (val: string, update: (callbackFn: () => void) => void) => {
     update(() => {
         fleetNeedle.value = val ? val.trim().toLowerCase() : null;
     });
+};
+
+const drawAzimuthLayer = (id: string) => {
+    try {
+        targetId = id;
+        const map = mapRef.value?.getUseMap();
+        if (!map) return;
+        if (azimuthEnabled.value === false) return;
+
+        const producer = clientDb.producers.get(id);
+        if (!producer) {
+            //logger.warn($q, 'Producer not found for id', id);
+            return;
+        }
+        const { location, status } = producer;
+        if (!location) {
+            //logger.warn($q, 'Producer has no location', producer);
+            return;
+        }
+        if (!status) {
+            //logger.warn($q, 'Producer has no status', producer);
+            return;
+        }
+
+        const parsedStatus = JSON.parse(status) as ProducerStatus;
+        const azimuth = drawAzimuth(location, parsedStatus);
+        map.updateVectorLayer('hover-layer', azimuth);
+    } catch (error) {
+        logger.error($q, 'Could not draw surface target', error);
+    }
+};
+
+const onHover = (hover: { active: boolean; target: Feature<Geometry> }) => {
+    // console.debug(`hoover ${hover.active}`);
+
+    const map = mapRef.value?.getUseMap();
+    if (!map) return;
+    if (hover.active === false) {
+        map?.removeLayer('hover-layer');
+        targetId = undefined;
+        return;
+    }
+    const id = hover.target.get('id');
+
+    if (!id) {
+        logger.warn($q, 'Id not found for target', hover);
+        return;
+    }
+    targetId = id;
+
+    drawAzimuthLayer(id);
 };
 
 const fleetFiltered = computed(() => {
@@ -182,6 +255,8 @@ watch(
     producersFiltered,
     () => {
         updateProducers();
+        const map = mapRef.value?.getUseMap();
+        if (!map) return;
         map.zoomVectorLayer('producers-markers');
     },
     { immediate: true },
@@ -190,6 +265,8 @@ watch(
 watch(
     idwMode,
     (mode) => {
+        const map = mapRef.value?.getUseMap();
+        if (!map) return;
         if (mode) {
             const producerLayer = map.getVectorLayer('producers-markers');
             if (producerLayer) {
@@ -213,16 +290,25 @@ watch(
 onMounted(async () => {
     working.value = true;
     try {
-        if (!mapRef.value) throw new Error('Map not loaded');
+        const map = mapRef.value?.getUseMap();
+        if (!map) throw new Error('Map not loaded');
 
-        map = mapRef.value.getUseMap();
         updateProducers();
 
         map.zoomVectorLayer('producers-markers');
+        map.setHoverHandler(onHover);
     } catch (error) {
         logger.error($q, 'Could not load producers', error);
     } finally {
         working.value = false;
+    }
+});
+
+onUnmounted(() => {
+    const map = mapRef.value?.getUseMap();
+    if (!map) return;
+    if (map) {
+        map.removeHoverHandler(onHover);
     }
 });
 </script>

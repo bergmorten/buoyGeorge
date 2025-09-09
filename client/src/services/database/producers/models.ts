@@ -2,18 +2,19 @@ export interface ProducerStatus_V1 {
     version: 1;
     wave: {
         height: number;
+        speed: number;
         direction: number;
     };
     current10m: {
-        value: number;
+        speed: number;
         direction: number;
     };
     current20m: {
-        value: number;
+        speed: number;
         direction: number;
     };
     current50m: {
-        value: number;
+        speed: number;
         direction: number;
     };
 }

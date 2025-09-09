@@ -6,7 +6,7 @@ import { producerStyle } from '../styles';
 import Feature from 'ol/Feature';
 import type Geometry from 'ol/geom/Geometry';
 import type { ProducerStatus } from 'client/services/database/producers/models';
-
+import { MaxCurrentSpeed, MaxWaveSpeed, MaxWaveHeight } from '../constants';
 const scalePercent = (value: number, by: number) => {
     return Math.min(Math.max((value * 100) / by, 0), 100);
 };
@@ -28,18 +28,32 @@ export const drawProducer = () => {
         const style = producerStyle(producer.state);
         const highlightedStyle = producerStyle(producer.state, true);
         feature.set('hoverStyle', highlightedStyle);
+        feature.set('hoverFunction', true);
         if (producer.status) {
             try {
                 const status: ProducerStatus = JSON.parse(producer.status);
                 if (status && status.wave) {
-                    const { height } = status.wave;
-                    const { value: current10m } = status.current10m;
-                    const { value: current20m } = status.current20m;
-                    const { value: current50m } = status.current50m;
-                    feature.set('waveHeight', scalePercent(height, 5));
-                    feature.set('current10m', scalePercent(current10m, 4));
-                    feature.set('current20m', scalePercent(current20m, 4));
-                    feature.set('current50m', scalePercent(current50m, 4));
+                    const { height, speed } = status.wave;
+                    const { speed: current10m } = status.current10m;
+                    const { speed: current20m } = status.current20m;
+                    const { speed: current50m } = status.current50m;
+                    feature.set(
+                        'waveHeight',
+                        scalePercent(height, MaxWaveHeight),
+                    );
+                    feature.set('waveSpeed', scalePercent(speed, MaxWaveSpeed));
+                    feature.set(
+                        'current10m',
+                        scalePercent(current10m, MaxCurrentSpeed),
+                    );
+                    feature.set(
+                        'current20m',
+                        scalePercent(current20m, MaxCurrentSpeed),
+                    );
+                    feature.set(
+                        'current50m',
+                        scalePercent(current50m, MaxCurrentSpeed),
+                    );
                 }
             } catch (error) {
                 console.error('Error setting feature props:', error);

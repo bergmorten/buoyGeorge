@@ -14,6 +14,7 @@ export const setupCloudLoop = (backend: MyBackend) => {
 
     const stack = backend.data.stack;
     const encryptionKey = new kms.Key(stack, 'SQSCloudloop');
+    encryptionKey.grant(cloudLoopGrantee, 'kms:GenerateDataKey');
 
     const MOQueue = new sqs.Queue(stack, 'MO', {
         fifo: true,
