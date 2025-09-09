@@ -128,7 +128,7 @@ const fleetColumns: QTableProps['columns'] = [
 ];
 const pagination = {
     sortBy: 'name',
-    descending: true,
+    descending: false,
     page: 1,
     rowsPerPage: 10,
     // rowsNumber: xx if getting data from a server

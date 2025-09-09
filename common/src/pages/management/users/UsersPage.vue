@@ -139,7 +139,7 @@ const userColumns: QTableProps['columns'] = [
 ];
 const pagination = {
     sortBy: 'name',
-    descending: true,
+    descending: false,
     page: 1,
     rowsPerPage: 10,
 };
