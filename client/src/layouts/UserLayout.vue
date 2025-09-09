@@ -35,19 +35,6 @@
                             v-ripple
                             clickable
                             class="subitem"
-                            :to="{ name: 'deployments_active' }"
-                            :class="{ active: subSection === 'Active' }"
-                        >
-                            <q-item-section avatar>
-                                <q-icon name="play_circle" />
-                            </q-item-section>
-
-                            <q-item-section>All Active</q-item-section>
-                        </q-item>
-                        <q-item
-                            v-ripple
-                            clickable
-                            class="subitem"
                             :to="{ name: 'deployments_project' }"
                             :class="{ active: subSection === 'Project' }"
                         >
@@ -57,18 +44,7 @@
 
                             <q-item-section>Projects</q-item-section>
                         </q-item>
-                        <q-item
-                            v-ripple
-                            clickable
-                            class="subitem"
-                            :to="{ name: 'deployments_fleet' }"
-                            :class="{ active: subSection === 'Fleet' }"
-                        >
-                            <q-item-section avatar>
-                                <q-icon name="apps" />
-                            </q-item-section>
-                            <q-item-section>Fleets</q-item-section>
-                        </q-item>
+
                         <q-item
                             v-ripple
                             clickable

@@ -5,6 +5,7 @@ import type { ProducerStatus } from 'client/services/database/producers/models';
 
 interface Anchor {
     name: string;
+    project: string;
     lat: number;
     lon: number;
     spread: number;
@@ -60,14 +61,50 @@ const randomOperation = (anchor: Anchor) => {
 
 const anchors: Anchor[] = [
     // South & Southwest (Skagerrak)
-    { name: 'Kristiansand', lat: 58.12, lon: 8.04, spread: 0.005 },
-    { name: 'Lindesnes', lat: 58.0324, lon: 7.777, spread: 0.005 },
-    { name: 'Arendal', lat: 58.41, lon: 8.82, spread: 0.005 },
+    {
+        name: 'Kristiansand',
+        lat: 58.12,
+        lon: 8.04,
+        spread: 0.005,
+        project: 'South Norway',
+    },
+    {
+        name: 'Lindesnes',
+        lat: 58.0324,
+        lon: 7.777,
+        spread: 0.005,
+        project: 'South Norway',
+    },
+    {
+        name: 'Arendal',
+        lat: 58.41,
+        lon: 8.82,
+        spread: 0.005,
+        project: 'South Norway',
+    },
 
     // West coast (North Sea)
-    { name: 'Stavanger', lat: 58.925, lon: 5.464, spread: 0.01 },
-    { name: 'Haugesund', lat: 59.482, lon: 5.117, spread: 0.01 },
-    { name: 'Bergen', lat: 60.464, lon: 4.861, spread: 0.01 },
+    {
+        name: 'Stavanger',
+        lat: 58.925,
+        lon: 5.464,
+        spread: 0.01,
+        project: 'West Norway',
+    },
+    {
+        name: 'Haugesund',
+        lat: 59.482,
+        lon: 5.117,
+        spread: 0.01,
+        project: 'West Norway',
+    },
+    {
+        name: 'Bergen',
+        lat: 60.464,
+        lon: 4.861,
+        spread: 0.01,
+        project: 'West Norway',
+    },
     {
         name: 'Fedje',
         lat: 60.79,
@@ -75,34 +112,120 @@ const anchors: Anchor[] = [
         spread: 0.02,
         initialWaveHeight: 4,
         initialCurrent: 2,
+        project: 'West Norway',
     },
-    { name: 'Florø', lat: 61.69, lon: 4.8, spread: 0.02 },
+    {
+        name: 'Florø',
+        lat: 61.69,
+        lon: 4.8,
+        spread: 0.02,
+        project: 'West Norway',
+    },
 
     // Møre & Romsdal / Trøndelag
-    { name: 'Ålesund', lat: 62.58, lon: 5.62, spread: 0.02 },
-    { name: 'Kristiansund', lat: 63.11, lon: 7.52, spread: 0.02 },
-    { name: 'Agdenes', lat: 63.45, lon: 10.078, spread: 0.005 },
+    {
+        name: 'Ålesund',
+        lat: 62.58,
+        lon: 5.62,
+        spread: 0.02,
+        project: 'Mid Norway',
+    },
+    {
+        name: 'Kristiansund',
+        lat: 63.11,
+        lon: 7.52,
+        spread: 0.02,
+        project: 'Mid Norway',
+    },
+    {
+        name: 'Agdenes',
+        lat: 63.45,
+        lon: 10.078,
+        spread: 0.005,
+        project: 'Mid Norway',
+    },
 
     // Namdalen / Helgeland
-    { name: 'Rørvik', lat: 64.723, lon: 11.4, spread: 0.02 },
-    { name: 'Brønnøysund', lat: 65.45, lon: 12.24, spread: 0.015 },
-    { name: 'Sandnessjøen', lat: 66.063, lon: 12.619, spread: 0.02 },
+    {
+        name: 'Rørvik',
+        lat: 64.723,
+        lon: 11.4,
+        spread: 0.02,
+        project: 'Helgeland',
+    },
+    {
+        name: 'Brønnøysund',
+        lat: 65.45,
+        lon: 12.24,
+        spread: 0.015,
+        project: 'Helgeland',
+    },
+    {
+        name: 'Sandnessjøen',
+        lat: 66.063,
+        lon: 12.619,
+        spread: 0.02,
+        project: 'Helgeland',
+    },
 
     // Nordland (Salten, Lofoten, Vesterålen)
-    { name: 'Bodø', lat: 67.26, lon: 14.15, spread: 0.02 },
-    { name: 'Svolvær', lat: 68.17, lon: 14.57, spread: 0.02 },
-    { name: 'Sortland', lat: 68.645, lon: 15.42, spread: 0.02 },
-    { name: 'Andøya', lat: 69.1, lon: 16.37, spread: 0.02 },
+    { name: 'Bodø', lat: 67.26, lon: 14.15, spread: 0.02, project: 'Nordland' },
+    {
+        name: 'Svolvær',
+        lat: 68.17,
+        lon: 14.57,
+        spread: 0.02,
+        project: 'Nordland',
+    },
+    {
+        name: 'Sortland',
+        lat: 68.645,
+        lon: 15.42,
+        spread: 0.02,
+        project: 'Nordland',
+    },
+    {
+        name: 'Andøya',
+        lat: 69.1,
+        lon: 16.37,
+        spread: 0.02,
+        project: 'Nordland',
+    },
 
     // Troms & Finnmark
-    { name: 'Senja', lat: 69.46, lon: 18.08, spread: 0.02 },
-    { name: 'Tromsø', lat: 69.66, lon: 18.87, spread: 0.01 },
-    { name: 'Hammerfest', lat: 70.66, lon: 23.59, spread: 0.02 },
-    { name: 'Honningsvåg', lat: 70.98, lon: 26.23, spread: 0.02 },
+    {
+        name: 'Senja',
+        lat: 69.46,
+        lon: 18.08,
+        spread: 0.02,
+        project: 'Finnmark',
+    },
+    {
+        name: 'Tromsø',
+        lat: 69.66,
+        lon: 18.87,
+        spread: 0.01,
+        project: 'Finnmark',
+    },
+    {
+        name: 'Hammerfest',
+        lat: 70.66,
+        lon: 23.59,
+        spread: 0.02,
+        project: 'Finnmark',
+    },
+    {
+        name: 'Honningsvåg',
+        lat: 70.98,
+        lon: 26.23,
+        spread: 0.02,
+        project: 'Finnmark',
+    },
 
     // NOAA Gulf of America
     {
         name: 'NOAA',
+        project: 'Gulf of America',
         lat: 29.286,
         lon: -87.69,
         spread: 0.02,
@@ -117,6 +240,7 @@ export const genDemoData = () => {
     const data: {
         name: string;
         startTime: Date;
+        project: string;
         records: {
             lat: number;
             lon: number;
@@ -152,6 +276,7 @@ export const genDemoData = () => {
         }
         data.push({
             name: a.name,
+            project: a.project,
             startTime,
             records,
         });

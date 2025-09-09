@@ -21,6 +21,7 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
     };
     try {
         const firstUser = clientDb.usersArray.value[0];
+        const projects: Map<string, string> = new Map();
         for (const entry of demoData) {
             const fleet = await clientDb.fleet.add({
                 name: entry.name,
@@ -28,17 +29,23 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                 description: 'This is demo fleet',
             });
             if (!fleet) throw new Error('Failed to create demo fleet');
-            const project = await clientDb.project.add({
-                name: `${entry.name} Project`,
-                isArchived: 'false',
-                description: 'This is demo project',
-            });
-            if (!project) throw new Error('Failed to create demo project');
+            let projectId = projects.get(entry.project);
+            if (!projectId) {
+                const project = await clientDb.project.add({
+                    name: entry.project,
+                    isArchived: 'false',
+                    description: 'This is demo project',
+                });
+                if (!project) throw new Error('Failed to create demo project');
+                projectId = project.id;
+                projects.set(entry.project, projectId);
+            }
+
             const deployment = await clientDb.deployment.add({
                 title: `${entry.name} ${entry.startTime.toLocaleDateString()}`,
                 isArchived: 'false',
                 description: 'This is demo deployment',
-                projectId: project.id,
+                projectId: projectId,
                 fleetId: fleet.id,
                 createdAt: entry.startTime.toISOString(),
                 deploymentData: '{}',
@@ -47,7 +54,7 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                 throw new Error('Failed to create demo deployment');
             await clientDb.projectFleet.add({
                 fleetId: fleet.id,
-                projectId: project.id,
+                projectId: projectId,
             });
 
             if (firstUser)
@@ -70,10 +77,12 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                     activeDeployment: deployment.id,
                     location: { lat: record.lat, lon: record.lon },
                     fleetId: fleet.id,
+                    projectId,
                 });
             }
         }
     } catch (error) {
         console.error('Error filling database with demo data:', error);
+        throw error;
     }
 };

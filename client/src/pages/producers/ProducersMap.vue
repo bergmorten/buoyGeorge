@@ -14,21 +14,32 @@
             <div class="menu-bar row q-gutter-sm">
                 <q-select
                     filled
-                    v-model="states"
+                    v-model="projects"
+                    label="Filter Projects"
+                    :options="projectFiltered"
+                    option-label="name"
                     multiple
-                    label="Filter States"
-                    :options="producerStates"
+                    use-input
+                    input-debounce="0"
+                    @filter="filterProject"
                     counter
                     clearable
                     hint="Selected"
                     class="select-btn"
                 >
+                    <template #no-option>
+                        <q-item>
+                            <q-item-section class="text-grey">
+                                No results
+                            </q-item-section>
+                        </q-item>
+                    </template>
                     <template
                         #option="{ itemProps, opt, selected, toggleOption }"
                     >
                         <q-item v-bind="itemProps">
                             <q-item-section>
-                                {{ opt }}
+                                {{ opt.name }}
                             </q-item-section>
                             <q-item-section side>
                                 <q-toggle
@@ -77,6 +88,34 @@
                         </q-item>
                     </template>
                 </q-select>
+                <q-select
+                    filled
+                    v-model="states"
+                    multiple
+                    label="Filter States"
+                    :options="producerStates"
+                    counter
+                    clearable
+                    hint="Selected"
+                    class="select-btn"
+                >
+                    <template
+                        #option="{ itemProps, opt, selected, toggleOption }"
+                    >
+                        <q-item v-bind="itemProps">
+                            <q-item-section>
+                                {{ opt }}
+                            </q-item-section>
+                            <q-item-section side>
+                                <q-toggle
+                                    :model-value="selected"
+                                    @update:model-value="toggleOption(opt)"
+                                />
+                            </q-item-section>
+                        </q-item>
+                    </template>
+                </q-select>
+
                 <q-select
                     filled
                     v-model="idwMode"
@@ -151,12 +190,15 @@ const mapRef = ref<InstanceType<typeof BaseMap> | null>(null);
 const center = ref<LatLon>({ lat: 0, lon: 0 });
 const allProducers = clientDb.producerArray;
 const allFleets = clientDb.fleetArray;
+const allProjects = clientDb.projectArray;
 const working = ref(false);
 const azimuthEnabled = ref(true);
-const states = ref<ProducerState[] | null>(null);
+const states = ref<ProducerState[] | null>(['RUNNING', 'ABORTED', 'MISSING']);
 const idwMode = ref<(typeof iwdModes)[number] | null>(null);
 const fleets = ref<Fleet[] | null>(null);
 const fleetNeedle = ref<string | null>(null);
+const projects = ref<Fleet[] | null>(null);
+const projectNeedle = ref<string | null>(null);
 let targetId: string | undefined = undefined;
 
 const { featureProducers } = drawProducer();
@@ -175,7 +217,14 @@ const filterFleet = (val: string, update: (callbackFn: () => void) => void) => {
         fleetNeedle.value = val ? val.trim().toLowerCase() : null;
     });
 };
-
+const filterProject = (
+    val: string,
+    update: (callbackFn: () => void) => void,
+) => {
+    update(() => {
+        projectNeedle.value = val ? val.trim().toLowerCase() : null;
+    });
+};
 const drawAzimuthLayer = (id: string) => {
     try {
         targetId = id;
@@ -227,18 +276,53 @@ const onHover = (hover: { active: boolean; target: Feature<Geometry> }) => {
     drawAzimuthLayer(id);
 };
 
-const fleetFiltered = computed(() => {
-    if (!fleetNeedle.value || fleetNeedle.value.length < 1) {
-        return allFleets.value;
+const projectFiltered = computed(() => {
+    let all = allProjects.value ?? [];
+    const fl = fleets.value ?? [];
+    if (fl.length > 0) {
+        const pf = clientDb.projectFleetArray.value ?? [];
+        all = all.filter((p) =>
+            pf.some(
+                (pf) =>
+                    pf.projectId === p.id &&
+                    fl.some((f) => f.id === pf.fleetId),
+            ),
+        );
     }
-    return allFleets.value.filter((f) =>
+
+    if (!projectNeedle.value || projectNeedle.value.length < 1) {
+        return all;
+    }
+    return all.filter((f) =>
+        f.name.toLowerCase().startsWith(projectNeedle.value as string),
+    );
+});
+
+const fleetFiltered = computed(() => {
+    let all = allFleets.value ?? [];
+    const pr = projects.value ?? [];
+    if (pr.length > 0) {
+        const pf = clientDb.projectFleetArray.value ?? [];
+        all = all.filter((f) =>
+            pf.some(
+                (pf) =>
+                    pf.fleetId === f.id &&
+                    pr.some((p) => p.id === pf.projectId),
+            ),
+        );
+    }
+    if (!fleetNeedle.value || fleetNeedle.value.length < 1) {
+        return all;
+    }
+    return all.filter((f) =>
         f.name.toLowerCase().startsWith(fleetNeedle.value as string),
     );
 });
 const producersFiltered = computed(() => {
-    const st = states.value ?? [];
+    const pr = projects.value ?? [];
     const fl = fleets.value ?? [];
-    if (st.length < 1 && fl.length < 1) {
+    const st = states.value ?? [];
+    if (pr.length < 1 && fl.length < 1 && st.length < 1) {
         return allProducers.value;
     }
     const result = allProducers.value.filter((p) => {
@@ -246,7 +330,11 @@ const producersFiltered = computed(() => {
         if (!inState) return false;
         const inFleet =
             fl.length > 0 ? fl.some((f) => f.id === p.fleetId) : true;
-        return inFleet;
+        if (!inFleet) return false;
+
+        const inProject =
+            pr.length > 0 ? pr.some((proj) => proj.id === p.projectId) : true;
+        return inProject;
     });
 
     return result;

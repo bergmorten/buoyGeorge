@@ -224,7 +224,9 @@ const useDatabase = () => {
     const projectArray = computed(() => Array.from(projects.values()));
     const producerArray = computed(() => Array.from(producers.values()));
     const deploymentArray = computed(() => Array.from(deployments.values()));
-
+    const projectFleetArray = computed(() =>
+        Array.from(projectFleets.values()),
+    );
     return {
         org,
         organization,
@@ -240,6 +242,7 @@ const useDatabase = () => {
         producerArray,
         deployments,
         deploymentArray,
+        projectFleetArray,
         user,
         fleet,
         userFleet,

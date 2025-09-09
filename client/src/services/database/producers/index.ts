@@ -53,6 +53,7 @@ const selectionSet = [
     'state',
     'status',
     'fleetId',
+    'projectId',
     'type',
     'createdAt',
     'updatedAt',

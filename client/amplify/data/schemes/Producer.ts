@@ -35,7 +35,16 @@ export const Producer = a
             .id()
             .authorization((allow) => [
                 allow.groupDefinedIn('fleetId').to(['read']),
-                allow.groups(['ADMINS']).to(['read', 'update']),
+                allow.groups(['ADMINS']).to(['read', 'update', 'delete']),
+                allow.groups(['SUPERS']),
+            ]),
+        projectId: a
+            .id()
+            .authorization((allow) => [
+                allow
+                    .groupDefinedIn('fleetId')
+                    .to(['read', 'update', 'delete']),
+                allow.groups(['ADMINS']).to(['read', 'update', 'delete']),
                 allow.groups(['SUPERS']),
             ]),
         //fleet: a.belongsTo('Fleet', 'fleetId'),
