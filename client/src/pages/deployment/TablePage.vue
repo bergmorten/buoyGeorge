@@ -138,7 +138,7 @@
 <script setup lang="ts">
 import type { QTableProps } from 'quasar';
 import { useQuasar } from 'quasar';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, getCurrentInstance, onUnmounted } from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
 import { clientDb } from 'client/services/database';
 import type { Fleet } from 'client/services/database/fleets';
@@ -148,6 +148,9 @@ import {
     type DeploymentState,
     deploymentStates,
 } from 'client/services/database/deployments';
+import TableHelp from './TableHelp.vue';
+import { useHelpStore } from 'cmn/stores/help';
+const helpStore = useHelpStore();
 
 const deploymentsColumns: QTableProps['columns'] = [
     {
@@ -319,6 +322,17 @@ const viewDeployment = async (deploymentId: string) => {
         timeout: 1000,
     });
 };
+
+onMounted(() => {
+    const myName = getCurrentInstance()?.type.__name;
+
+    if (myName)
+        helpStore.addHelp({ name: myName, type: 'page', helpPage: TableHelp });
+});
+onUnmounted(() => {
+    const myName = getCurrentInstance()?.type.__name;
+    if (myName) helpStore.removeHelp(myName);
+});
 </script>
 <style lang="scss" scoped>
 .deployment-table-card {

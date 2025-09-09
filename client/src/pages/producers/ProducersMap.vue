@@ -154,7 +154,14 @@
 
 <script setup lang="ts">
 import { logger } from 'cmn/lib/logger';
-import { computed, onMounted, ref, watch, onUnmounted } from 'vue';
+import {
+    computed,
+    onMounted,
+    ref,
+    watch,
+    onUnmounted,
+    getCurrentInstance,
+} from 'vue';
 import { fullHeight } from 'cmn/composable/helpers';
 import { useQuasar } from 'quasar';
 import BaseMap from 'client/components/Map/baseMap.vue';
@@ -173,6 +180,9 @@ import { drawAzimuth } from 'client/lib/map/azimuth/azimuth';
 import type { ProducerStatus } from 'client/services/database/producers/models';
 import type Feature from 'ol/Feature';
 import type { Geometry } from 'ol/geom';
+import ProducersMapHelp from './ProducersMapHelp.vue';
+import { useHelpStore } from 'cmn/stores/help';
+const helpStore = useHelpStore();
 
 // import { useCognitoUserStore } from 'cmn/stores/cognitoUser';
 const iwdModes = [
@@ -377,6 +387,14 @@ watch(
 );
 
 onMounted(async () => {
+    const myName = getCurrentInstance()?.type.__name;
+
+    if (myName)
+        helpStore.addHelp({
+            name: myName,
+            type: 'page',
+            helpPage: ProducersMapHelp,
+        });
     working.value = true;
     try {
         const map = mapRef.value?.getUseMap();
@@ -394,6 +412,8 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+    const myName = getCurrentInstance()?.type.__name;
+    if (myName) helpStore.removeHelp(myName);
     const map = mapRef.value?.getUseMap();
     if (!map) return;
     if (map) {
