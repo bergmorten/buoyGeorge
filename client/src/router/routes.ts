@@ -48,6 +48,17 @@ const routes: RouteRecordRaw[] = [
                 },
             },
             {
+                path: 'deployments/table',
+                name: 'deployments_table',
+                component: () =>
+                    import('client/pages/deployment/TablePage.vue'),
+                meta: {
+                    menuSection: 'Deployments',
+                    subSection: 'Table',
+                    requiresAuth: true,
+                },
+            },
+            {
                 path: 'producers/map',
                 name: 'producers_map',
                 component: () =>

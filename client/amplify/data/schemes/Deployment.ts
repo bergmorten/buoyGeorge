@@ -8,6 +8,7 @@ export const Deployment = a
         title: a.string().required(),
         description: a.string().required(),
         deploymentData: a.string().required(),
+        state: a.enum(['RUNNING', 'ENDED']),
         fleetId: a.id().required(),
         //fleet: a.belongsTo('Fleet', 'fleetId'),
         projectId: a.id().required(),

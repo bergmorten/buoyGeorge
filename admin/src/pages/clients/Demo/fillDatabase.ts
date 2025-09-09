@@ -45,6 +45,7 @@ export const fillDatabaseWithDemoData = async (demoData: DemoDataType) => {
                 title: `${entry.name} ${entry.startTime.toLocaleDateString()}`,
                 isArchived: 'false',
                 description: 'This is demo deployment',
+                state: 'RUNNING',
                 projectId: projectId,
                 fleetId: fleet.id,
                 createdAt: entry.startTime.toISOString(),

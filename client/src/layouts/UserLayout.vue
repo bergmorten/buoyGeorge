@@ -35,28 +35,14 @@
                             v-ripple
                             clickable
                             class="subitem"
-                            :to="{ name: 'deployments_project' }"
-                            :class="{ active: subSection === 'Project' }"
-                        >
-                            <q-item-section avatar>
-                                <q-icon name="dashboard_customize" />
-                            </q-item-section>
-
-                            <q-item-section>Projects</q-item-section>
-                        </q-item>
-
-                        <q-item
-                            v-ripple
-                            clickable
-                            class="subitem"
-                            :to="{ name: 'deployments_list' }"
-                            :class="{ active: subSection === 'List' }"
+                            :to="{ name: 'deployments_table' }"
+                            :class="{ active: subSection === 'Table' }"
                         >
                             <q-item-section avatar>
                                 <q-icon name="view_list" />
                             </q-item-section>
 
-                            <q-item-section>Table</q-item-section>
+                            <q-item-section>Active and Past</q-item-section>
                         </q-item>
                         <q-item
                             v-ripple

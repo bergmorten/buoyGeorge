@@ -12,7 +12,11 @@ type Keys = keyof Schema['Deployment']['type'];
 export type Deployment = Readonly<
     Omit<Schema['Deployment']['type'], 'deploymentData'>
 >;
-
+export type DeploymentState = Deployment['state'];
+export const deploymentStates: ReadonlyArray<DeploymentState> = [
+    'RUNNING',
+    'ENDED',
+] as const;
 export interface FullDeployment extends Deployment {
     readonly deploymentData: string | null;
 }
@@ -26,6 +30,7 @@ const selectionSet = [
     'isArchived',
     'title',
     'description',
+    'state',
     'fleetId',
     'projectId',
     'createdAt',

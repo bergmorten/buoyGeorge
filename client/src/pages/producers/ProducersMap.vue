@@ -168,6 +168,7 @@ import {
     type ProducerState,
 } from 'client/services/database/producers';
 import type { Fleet } from 'client/services/database/fleets';
+import type { Project } from 'client/services/database/projects';
 import { drawAzimuth } from 'client/lib/map/azimuth/azimuth';
 import type { ProducerStatus } from 'client/services/database/producers/models';
 import type Feature from 'ol/Feature';
@@ -197,7 +198,7 @@ const states = ref<ProducerState[] | null>(['RUNNING', 'ABORTED', 'MISSING']);
 const idwMode = ref<(typeof iwdModes)[number] | null>(null);
 const fleets = ref<Fleet[] | null>(null);
 const fleetNeedle = ref<string | null>(null);
-const projects = ref<Fleet[] | null>(null);
+const projects = ref<Project[] | null>(null);
 const projectNeedle = ref<string | null>(null);
 let targetId: string | undefined = undefined;
 
