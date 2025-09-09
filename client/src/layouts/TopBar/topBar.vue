@@ -10,7 +10,8 @@
             @click="toggleDrawer"
         />
         <q-toolbar-title shrink class="gt-sm txt-title">
-            Nortek Group {{ routerStore.routerMeta.subSection }}
+            {{ routerStore.routerMeta.menuSection }} -
+            {{ routerStore.routerMeta.subSection }}
         </q-toolbar-title>
         <status-radio
             :checked="isConnected"
