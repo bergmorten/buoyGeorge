@@ -120,3 +120,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #666;
 }
+
+.q-drawer--on-top {
+    z-index: 10000 !important;
+}

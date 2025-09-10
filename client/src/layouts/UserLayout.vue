@@ -595,7 +595,7 @@ onUnmounted(() => {
     width: 100%;
     height: calc(100vh - 58px);
     position: absolute;
-    z-index: 2;
+    z-index: 9999 !important;
 }
 </style>
 <style lang="scss">

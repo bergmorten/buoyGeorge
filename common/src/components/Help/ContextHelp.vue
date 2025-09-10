@@ -22,6 +22,7 @@ const close = () => {
 <style lang="scss">
 .context-help {
     margin-top: 16px;
+
     .close-btn {
         position: absolute;
         top: 0;
