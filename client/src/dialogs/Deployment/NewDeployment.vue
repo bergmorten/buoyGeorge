@@ -8,6 +8,7 @@
         <q-card class="q-dialog-plugin new-deployment-dialog column">
             <dialog-header class="col-auto" title="New Deployment" />
             <q-card-section class="col scroll" style="max-width: 100%">
+                {{ optionsOk }}
                 <q-stepper
                     v-model="step"
                     flat
@@ -179,8 +180,14 @@
                         :header-nav="optionsOk"
                         class="column items-stretch"
                     >
-                        <deployment-options
+                        <deployment-config
+                            :config="config"
                             style="width: 100%; max-width: 100%"
+                            @is-valid="
+                                (valid) => {
+                                    configValid = valid;
+                                }
+                            "
                         />
                         <q-separator class="q-my-md" />
                         <q-btn-dropdown
@@ -206,7 +213,10 @@
 
                         <q-stepper-navigation>
                             <q-btn
-                                @click="step = 4"
+                                @click="
+                                    completedAllSteps = true;
+                                    step = 4;
+                                "
                                 color="primary"
                                 label="Next"
                             />
@@ -286,8 +296,8 @@ import NewDeploymentHelp from './NewDeploymentHelp.vue';
 import { useHelpStore } from 'cmn/stores/help';
 import { logger } from 'cmn/lib/logger';
 import { clientDb } from 'client/services/database';
-import DeploymentOptions from './components/DeploymentOptions.vue';
-
+import DeploymentConfig from './components/DeploymentOptions.vue';
+import type { DeploymentOptions } from './components/constants';
 interface SelectOption {
     label: string;
     id: string;
@@ -296,6 +306,8 @@ interface SelectOption {
 const $q = useQuasar();
 const helpStore = useHelpStore();
 
+const config = ref<DeploymentOptions | null>(null);
+const configValid = ref(false);
 const deployWhenOptions = [
     {
         label: 'Deploy now',
@@ -332,6 +344,7 @@ defineEmits([
 ]);
 const { dialogRef, onDialogHide } = useDialogPluginComponent();
 const step = ref(1);
+const completedAllSteps = ref(false);
 const fleetNeedle = ref<string | null>(null);
 const deployWhen = ref<DeployWhen>(deployWhenOptions[0]);
 const producerNeedle = ref<string | null>(null);
@@ -377,10 +390,15 @@ const producersOk = computed(() => {
     );
 });
 const optionsOk = computed(() => {
-    return step.value > 3;
+    return configValid.value;
 });
 const deployOk = computed(() => {
-    return step.value > 4;
+    return (
+        completedAllSteps.value &&
+        optionsOk.value &&
+        producersOk.value &&
+        fleetOk.value
+    );
 });
 
 const reset = () => {

@@ -35,6 +35,10 @@ export type AdditionalReport = (typeof additionalReports)[number];
 
 export const gnssInterval = [
     {
+        label: 'Off - Unless additional report is triggered',
+        value: null,
+    },
+    {
         label: '5 min',
         value: 5,
     },
@@ -112,6 +116,10 @@ export const gnssDuration = [
 ];
 
 export const dopplerInterval = [
+    {
+        label: 'Off - Unless additional report is triggered',
+        value: null,
+    },
     {
         label: '5 min',
         value: 5,

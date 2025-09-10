@@ -126,7 +126,7 @@
     </q-form>
 </template>
 <script lang="ts" setup>
-import { reactive, useTemplateRef, watch, ref, onMounted } from 'vue';
+import { reactive, useTemplateRef, watch, onMounted } from 'vue';
 import type { DeploymentOptions } from './constants';
 import {
     gnssDuration,
@@ -140,35 +140,37 @@ import {
 import type { QForm } from 'quasar';
 
 const props = defineProps<{
-    config?: DeploymentOptions;
+    config?: DeploymentOptions | null;
 }>();
 
 const emit = defineEmits<{
     (e: 'update:config', value: DeploymentOptions): void;
+    (e: 'isValid', value: boolean): void;
 }>();
 
 const configForm = useTemplateRef<QForm>('configForm');
-const isValid = ref(false);
 const state = reactive<DeploymentOptions>({ ...defaultSettings });
-
+const validate = async () => {
+    if (configForm.value) {
+        const valid = await configForm.value.validate();
+        emit('isValid', valid);
+        return valid;
+    }
+    emit('isValid', false);
+    return false;
+};
 watch(
     () => state,
     async () => {
-        const result = (await configForm.value?.validate()) ?? false;
-        isValid.value = result;
-        if (result) {
-            emit('update:config', { ...state });
-        }
+        await validate();
     },
-    { deep: true },
+    { deep: true, immediate: true },
 );
 
-onMounted(() => {
+onMounted(async () => {
     if (props.config) {
         Object.assign(state, props.config);
     }
-});
-defineExpose({
-    isValid,
+    await validate();
 });
 </script>
