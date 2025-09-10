@@ -47,11 +47,12 @@
                         <q-item
                             v-ripple
                             clickable
-                            class="gt-sm subitem"
+                            class="subitem"
                             :to="{ name: 'deployments_deploy' }"
                             :class="{
                                 active: subSection === 'Deploy',
                             }"
+                            @click="newDeployment"
                         >
                             <q-item-section avatar>
                                 <q-icon name="add" />
@@ -423,6 +424,7 @@ import TopBar from './TopBar/topBar.vue';
 import packageJson from 'clientRoot/package.json';
 import { storeToRefs } from 'pinia';
 import { clientDb } from 'client/services/database';
+import newDeploymentDialog from 'client/dialogs/Deployment/NewDeployment.vue';
 
 const $q = useQuasar();
 const drawerStore = useDrawerStore();
@@ -490,6 +492,18 @@ const userSignOut = async () => {
     //await clearOfflineDb();
 
     await signOut();
+};
+
+const newDeployment = () => {
+    drawerStore.hideBoth();
+    $q.dialog({
+        component: newDeploymentDialog,
+        componentProps: {},
+        persistent: true,
+    })
+        .onOk(() => {})
+        .onCancel(() => {})
+        .onDismiss(() => {});
 };
 
 onMounted(async () => {

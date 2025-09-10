@@ -153,7 +153,7 @@ const login = async () => {
         console.error(error);
     }
 
-    await router.push({ name: 'blank_page' });
+    await router.push({ name: 'producers_map' });
 };
 
 const tryLogin = async () => {

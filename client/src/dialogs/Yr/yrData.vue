@@ -3,6 +3,7 @@
         ref="dialogRef"
         class="q-electron-drag--exception"
         @hide="onDialogHide"
+        :seamless="backdropVisible"
     >
         <q-card class="q-dialog-plugin yr-dialog">
             <q-img src="images/weather.jpg">
@@ -24,44 +25,27 @@
     </q-dialog>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import 'vue-json-pretty/lib/styles.css';
 
-import type { PropType } from 'vue';
-import { defineComponent } from 'vue';
+import { inject } from 'vue';
 import { useDialogPluginComponent } from 'quasar';
 import VueJsonPretty from 'vue-json-pretty';
 
 //TODO MAKE SOMETHING LIKE THIS
 // https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/combo-meteogram
+const backdropVisible = inject<boolean>('backdropVisible');
 
-export default defineComponent({
-    name: 'YrDataDialog',
-    components: { VueJsonPretty },
-    props: {
-        data: {
-            type: Object as PropType<Record<string, string | number>>,
-            required: true,
-        },
-    },
+defineEmits([
+    // REQUIRED; need to specify some events that your
+    // component will emit through useDialogPluginComponent()
+    ...useDialogPluginComponent.emits,
+]);
+const { dialogRef, onDialogHide } = useDialogPluginComponent();
 
-    emits: [...useDialogPluginComponent.emits, 'ok'],
-
-    setup() {
-        const { dialogRef, onDialogHide, onDialogCancel } =
-            useDialogPluginComponent();
-
-        return {
-            // This is REQUIRED;
-            // Need to inject these (from useDialogPluginComponent() call)
-            // into the vue scope for the vue html template
-            dialogRef,
-            onDialogHide,
-            // we can passthrough onDialogCancel directly
-            onCancelClick: onDialogCancel,
-        };
-    },
-});
+defineProps<{
+    data: Record<string, string | number>;
+}>();
 </script>
 
 <style lang="scss" scoped>
