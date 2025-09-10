@@ -177,10 +177,33 @@
                         done-color="positive"
                         :done="optionsOk"
                         :header-nav="optionsOk"
+                        class="column items-stretch"
                     >
                         <deployment-options
                             style="width: 100%; max-width: 100%"
                         />
+                        <q-separator class="q-my-md" />
+                        <q-btn-dropdown
+                            color="secondary"
+                            label="Individual Producers Configuration"
+                            style="width: 100%; max-width: 100%"
+                        >
+                            <q-list>
+                                <q-item
+                                    v-for="selectedProducer in selectedProducers"
+                                    :key="selectedProducer.id"
+                                    clickable
+                                    v-ripple
+                                >
+                                    <q-item-section>
+                                        <q-item-label>
+                                            {{ selectedProducer.label }}
+                                        </q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-btn-dropdown>
+
                         <q-stepper-navigation>
                             <q-btn
                                 @click="step = 4"
@@ -199,26 +222,42 @@
 
                     <q-step
                         :name="4"
-                        title="Review"
+                        title="Review and Start Time"
                         icon="rocket_launch"
                         done-color="positive"
                         :done="deployOk"
                         :header-nav="deployOk"
                     >
+                        <div>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit, sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Ut enim ad minim veniam, quis
+                            nostrud exercitation ullamco laboris nisi ut aliquip
+                            ex ea commodo consequat.
+                        </div>
+                        <q-select
+                            v-model="deployWhen"
+                            dense
+                            outlined
+                            label="Start deployment when"
+                            class="col"
+                            style="max-width: 100%"
+                            :options="deployWhenOptions"
+                        >
+                            <template #option="{ itemProps, opt }">
+                                <q-item v-bind="itemProps">
+                                    <q-item-section>
+                                        {{ opt.fullLabel }}
+                                    </q-item-section>
+                                </q-item>
+                            </template>
+                        </q-select>
                         <q-stepper-navigation>
-                            <q-btn color="primary" label="Launch" />
                             <q-btn
                                 flat
-                                @click="step = 2"
+                                @click="step = 3"
                                 color="primary"
                                 label="Back"
-                                class="q-ml-sm"
-                            />
-                            <q-btn
-                                flat
-                                @click="step = 2"
-                                color="primary"
-                                label="Reset"
                                 class="q-ml-sm"
                             />
                         </q-stepper-navigation>
@@ -228,10 +267,12 @@
             <q-separator inset />
             <q-card-actions align="right">
                 <n-btn v-close-popup label="Cancel" />
+                <n-btn flat @click="reset" color="primary" label="Reset" />
                 <n-btn
                     active
                     v-close-popup
                     :disabled="!deployOk"
+                    icon="rocket_launch"
                     label="Deploy"
                 />
             </q-card-actions>
@@ -264,6 +305,29 @@ interface SelectOption {
 const $q = useQuasar();
 const helpStore = useHelpStore();
 
+const deployWhenOptions = [
+    {
+        label: 'Deploy now',
+        fullLabel:
+            'Deploy now - The configuration will load and start when they power on',
+        value: 'deploy_now',
+    },
+    {
+        label: 'Inserted in water',
+        fullLabel:
+            'Inserted in water - The configuration will load and start when they are submerged',
+        value: 'inserted_in_water',
+    },
+    {
+        label: 'At specific time',
+        fullLabel:
+            'At specific time - The configuration will load and start at a specific time',
+        value: 'at_specific_time',
+    },
+] as const;
+
+type DeployWhen = (typeof deployWhenOptions)[number];
+
 //TODO MAKE SOMETHING LIKE THIS
 // https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/combo-meteogram
 const backdropVisible = inject<boolean>('backdropVisible');
@@ -278,6 +342,7 @@ defineEmits([
 const { dialogRef, onDialogHide } = useDialogPluginComponent();
 const step = ref(1);
 const fleetNeedle = ref<string | null>(null);
+const deployWhen = ref<DeployWhen>(deployWhenOptions[0]);
 const producerNeedle = ref<string | null>(null);
 const filterFleet = (val: string, update: (callbackFn: () => void) => void) => {
     update(() => {
@@ -326,6 +391,14 @@ const optionsOk = computed(() => {
 const deployOk = computed(() => {
     return step.value > 4;
 });
+
+const reset = () => {
+    step.value = 1;
+    fleetNeedle.value = null;
+    producerNeedle.value = null;
+    selectedFleet.value = null;
+    selectedProducers.value = null;
+};
 
 const confirmFleet = () => {
     if (!selectedFleet.value) return;
