@@ -240,7 +240,7 @@
                             dense
                             outlined
                             label="Start deployment when"
-                            class="col"
+                            class="col q-mt-sm"
                             style="max-width: 100%"
                             :options="deployWhenOptions"
                         >
@@ -252,15 +252,6 @@
                                 </q-item>
                             </template>
                         </q-select>
-                        <q-stepper-navigation>
-                            <q-btn
-                                flat
-                                @click="step = 3"
-                                color="primary"
-                                label="Back"
-                                class="q-ml-sm"
-                            />
-                        </q-stepper-navigation>
                     </q-step>
                 </q-stepper>
             </q-card-section>

@@ -1,41 +1,53 @@
 <template>
-    <div class="column">
+    <q-form ref="configForm" class="column" greedy>
         <div class="column">
             <div class="row text-caption">Wave GNSS Options</div>
             <div class="row q-gutter-x-sm">
-                <q-input
+                <q-select
+                    :options="gnssInterval"
                     v-model="state.waveGnssInterval"
                     dense
                     outlined
-                    label="Interval (min)"
+                    label="Interval between sampling periods"
                     class="col"
+                    map-options
+                    emit-value
                 />
-                <q-input
+                <q-select
+                    :options="gnssDuration"
                     v-model="state.waveGnssSamplingLength"
                     dense
                     outlined
-                    label="Sampling Duration (s)"
+                    label="Sampling Duration"
                     class="col"
+                    map-options
+                    emit-value
                 />
             </div>
         </div>
         <div class="column q-mt-sm">
             <div class="row text-caption">Acoustic Current Profiler</div>
             <div class="row q-gutter-x-sm">
-                <q-input
+                <q-select
+                    :options="dopplerInterval"
                     v-model="state.dopplerInterval"
                     dense
                     outlined
-                    label="Interval (min)"
+                    label="Interval between sampling periods"
                     class="col"
+                    map-options
+                    emit-value
                 />
 
-                <q-input
+                <q-select
+                    :options="dopplerDepth"
                     v-model="state.dopplerDepth"
                     dense
                     outlined
-                    label="Max depth (m)"
+                    label="Max depth to record currents"
                     class="col"
+                    map-options
+                    emit-value
                 />
             </div>
         </div>
@@ -75,12 +87,35 @@
         <div class="column q-mt-sm">
             <div class="row text-caption">Cloud Report Interval</div>
             <div class="row q-gutter-x-sm">
-                <q-input
+                <q-select
+                    :options="cloudReportInterval"
                     v-model="state.cloudReportInterval"
                     dense
                     outlined
-                    label="Interval (min)"
+                    label="Interval between sending reports to the cloud"
                     class="col"
+                    :rules="[
+                        (val) =>
+                            val !== null && val >= 5
+                                ? true
+                                : 'Interval must be at least 5 minutes',
+                        (val) =>
+                            val !== null && val <= 2880
+                                ? true
+                                : 'Interval must be at most 48 hours',
+                        (val) =>
+                            state.waveGnssInterval === null ||
+                            (val !== null && val >= state.waveGnssInterval)
+                                ? true
+                                : 'Interval must be at least the GNSS interval',
+                        (val) =>
+                            state.dopplerInterval === null ||
+                            (val !== null && val >= state.dopplerInterval)
+                                ? true
+                                : 'Interval must be at least 5 minutes greater than the Acoustic interval',
+                    ]"
+                    map-options
+                    emit-value
                 />
 
                 <div class="col">
@@ -88,52 +123,52 @@
                 </div>
             </div>
         </div>
-    </div>
+    </q-form>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { reactive, useTemplateRef, watch, ref, onMounted } from 'vue';
+import type { DeploymentOptions } from './constants';
+import {
+    gnssDuration,
+    gnssInterval,
+    dopplerDepth,
+    dopplerInterval,
+    cloudReportInterval,
+    additionalReports,
+    defaultSettings,
+} from './constants';
+import type { QForm } from 'quasar';
 
-const additionalReports = [
-    {
-        label: 'Weather forecast',
-        fullLabel:
-            'Weather forecast - Measure when high wind or waves are expected',
-        value: 'weather_forecast',
+const props = defineProps<{
+    config?: DeploymentOptions;
+}>();
+
+const emit = defineEmits<{
+    (e: 'update:config', value: DeploymentOptions): void;
+}>();
+
+const configForm = useTemplateRef<QForm>('configForm');
+const isValid = ref(false);
+const state = reactive<DeploymentOptions>({ ...defaultSettings });
+
+watch(
+    () => state,
+    async () => {
+        const result = (await configForm.value?.validate()) ?? false;
+        isValid.value = result;
+        if (result) {
+            emit('update:config', { ...state });
+        }
     },
-    {
-        label: 'High tide',
-        fullLabel: 'High tide - Measure when tide is at its highest',
-        value: 'high_tide',
-    },
-    {
-        label: 'Low tide',
-        fullLabel: 'Low tide - Measure when tide is at its lowest',
-        value: 'low_tide',
-    },
-    {
-        label: 'Flood tide',
-        fullLabel: 'Flood tide - When tide currents are on the strongest',
-        value: 'flood_tide',
-    },
-    {
-        label: 'Freak wave',
-        fullLabel: 'Freak wave - A anomaly large wave detected',
-        value: 'freak_wave',
-    },
-    {
-        label: 'Sentry',
-        fullLabel: 'Sentry - Waves caused by boat traffic',
-        value: 'sentry',
-    },
-] as const;
-type AdditionalReport = (typeof additionalReports)[number];
-const state = reactive({
-    waveGnssInterval: 30 as number | null,
-    waveGnssSamplingLength: 20 as number | null,
-    dopplerInterval: 15 as number | null,
-    dopplerDepth: 50 as number | null,
-    acpMaxDepth: 50 as number | null,
-    additionalReports: null as AdditionalReport[] | null,
-    cloudReportInterval: 60 as number | null,
+    { deep: true },
+);
+
+onMounted(() => {
+    if (props.config) {
+        Object.assign(state, props.config);
+    }
+});
+defineExpose({
+    isValid,
 });
 </script>
